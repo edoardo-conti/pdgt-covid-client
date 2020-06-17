@@ -41,6 +41,18 @@ import {
 import { ArgumentScale, Animation } from "@devexpress/dx-react-chart";
 import { scalePoint } from "d3-scale";
 import { withStyles } from "@material-ui/core/styles";
+
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
+
+import Button from "@material-ui/core/Button";
+import SearchIcon from "@material-ui/icons/Search";
+
+import moment from "moment";
+
 const chartRootStyles = {
   chart: {
     paddingRight: "20px",
@@ -210,10 +222,11 @@ function TrendNazionale() {
   // data per grafico
   const datagraph = [];
 
-  data.map(function (item) {
+  data.map(function (record) {
     datagraph.push({
-      data: item.data,
-      nuovi_positivi: item.nuovi_positivi,
+      data: record.data,
+      nuovi_positivi: record.nuovi_positivi,
+      terapia_intensiva: record.terapia_intensiva
     });
 
     return null;
@@ -410,6 +423,34 @@ function TrendNazionale() {
       });
   };
 
+  // ricerca trend per data (in basso a destra)
+  const [selectedDatePick, setSelectedDatePick] = React.useState(
+    new Date("2020-02-24")
+  );
+
+  const handleDateChangePick = (datepick) => {
+    setSelectedDatePick(datepick);
+  };
+
+  const [recordByDate, setRecordByDate] = useState([]);
+
+  function searchTrendByDate() {
+    api
+      .get(
+        "/andamento/nazionale/data/" +
+          moment(selectedDatePick).format("YYYY-MM-DD"),
+        {
+          responseType: "json",
+        }
+      )
+      .then((res) => {
+        setRecordByDate(res.data.data);
+      })
+      .catch((error) => {
+        console.log("Error");
+      });
+  }
+
   const classes = useStyles();
 
   // get picco nazionale
@@ -473,6 +514,11 @@ function TrendNazionale() {
             valueField="nuovi_positivi"
             argumentField="data"
           />
+          <AreaSeries
+            name="Terapia Intensiva"
+            valueField="terapia_intensiva"
+            argumentField="data"
+          />
           <Animation />
           <Legend
             position="bottom"
@@ -499,23 +545,87 @@ function TrendNazionale() {
                 </Typography>
                 <h4>{picco.data}</h4>
                 <p>
-                ricoverati con sintomi: {picco.ricoverati_con_sintomi}<br />
-                terapia intensiva: {picco.terapia_intensiva}<br />
-                totale ospedalizzati: {picco.totale_ospedalizzati}<br />
-                isolamento domiciliare: {picco.isolamento_domiciliare}<br />
-                totale positivi: {picco.totale_positivi}<br />
-                variazione totale positivi: {picco.variazione_totale_positivi}<br />
-                nuovi positivi: {picco.nuovi_positivi}<br />
-                dimessi guariti: {picco.dimessi_guariti}<br />
-                deceduti: {picco.deceduti}<br />
-                totale casi: {picco.totale_casi}<br />
-                tamponi: {picco.tamponi}<br />
+                  ricoverati con sintomi: {picco.ricoverati_con_sintomi}
+                  <br />
+                  terapia intensiva: {picco.terapia_intensiva}
+                  <br />
+                  totale ospedalizzati: {picco.totale_ospedalizzati}
+                  <br />
+                  isolamento domiciliare: {picco.isolamento_domiciliare}
+                  <br />
+                  totale positivi: {picco.totale_positivi}
+                  <br />
+                  variazione totale positivi: {picco.variazione_totale_positivi}
+                  <br />
+                  nuovi positivi: {picco.nuovi_positivi}
+                  <br />
+                  dimessi guariti: {picco.dimessi_guariti}
+                  <br />
+                  deceduti: {picco.deceduti}
+                  <br />
+                  totale casi: {picco.totale_casi}
+                  <br />
+                  tamponi: {picco.tamponi}
+                  <br />
                 </p>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={6}>
-            <Paper className={classes.paper}><h1>(todo) ricerca per data</h1></Paper>
+            <Paper className={classes.paper}>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  disableToolbar
+                  variant="inline"
+                  format="yyyy-MM-dd"
+                  margin="normal"
+                  id="date-picker-inline"
+                  value={selectedDatePick}
+                  onChange={handleDateChangePick}
+                  KeyboardButtonProps={{
+                    "aria-label": "change date",
+                  }}
+                />
+              </MuiPickersUtilsProvider>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                startIcon={<SearchIcon />}
+                onClick={() => {
+                  searchTrendByDate();
+                }}
+              >
+                Ricerca
+              </Button>
+              <p>
+                data: {recordByDate.data}
+                <br />
+                ricoverati con sintomi: {recordByDate.ricoverati_con_sintomi}
+                <br />
+                terapia intensiva: {recordByDate.terapia_intensiva}
+                <br />
+                totale ospedalizzati: {recordByDate.totale_ospedalizzati}
+                <br />
+                isolamento domiciliare: {recordByDate.isolamento_domiciliare}
+                <br />
+                totale positivi: {recordByDate.totale_positivi}
+                <br />
+                variazione totale positivi:{" "}
+                {recordByDate.variazione_totale_positivi}
+                <br />
+                nuovi positivi: {recordByDate.nuovi_positivi}
+                <br />
+                dimessi guariti: {recordByDate.dimessi_guariti}
+                <br />
+                deceduti: {recordByDate.deceduti}
+                <br />
+                totale casi: {recordByDate.totale_casi}
+                <br />
+                tamponi: {recordByDate.tamponi}
+                <br />
+              </p>
+            </Paper>
           </Grid>
         </Grid>
       </div>
