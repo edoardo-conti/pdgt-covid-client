@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import "./trendNazionale.css";
+import "./trendNazionale.css";
 import { forwardRef } from "react";
 // import Grid from '@material-ui/core/Grid'
 
@@ -52,9 +52,11 @@ const api = axios.create({
   baseURL: `https://pdgt-covid.herokuapp.com`,
 });
 
-function validateField(input) {
+function validateDate(input) {
   // check
-  return true;
+  var regEx = /^\d{4}-\d{2}-\d{2}$/;
+
+  return input.match(regEx)
 }
 
 function TrendNazionale() {
@@ -62,7 +64,7 @@ function TrendNazionale() {
   const [auth, setAuth] = useState([]);
 
   var columns = [
-    { title: "data", field: "data" , editable: 'never'},
+    { title: "data", field: "data" , editable: 'onAdd'},
     { title: "stato", field: "stato", hidden: true },
     { title: "ricoverati_con_sintomi", field: "ricoverati_con_sintomi" },
     { title: "terapia_intensiva", field: "terapia_intensiva" },
@@ -75,6 +77,7 @@ function TrendNazionale() {
     { title: "deceduti", field: "deceduti" },
     { title: "totale_casi", field: "totale_casi" },
     { title: "tamponi", field: "tamponi" },
+    { title: "casi_testati", field: "casi_testati.Int64" }
   ];
 
   //table data
@@ -83,6 +86,9 @@ function TrendNazionale() {
   //for error handling
   const [iserror, setIserror] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
+  
+  const [issuccess, setIssuccess] = useState(false);
+  const [successMessages, setSuccessMessages] = useState([]);
 
   useEffect(() => {
     // controllo se l'utente è loggato 
@@ -132,8 +138,8 @@ function TrendNazionale() {
           "dimessi_guariti": parseInt(newData.dimessi_guariti),
           "deceduti": parseInt(newData.deceduti),
           "totale_casi": parseInt(newData.totale_casi),
-          "tamponi": parseInt(newData.tamponi)
-          //"casi_testati": parseInt(newData.casi_testati)
+          "tamponi": parseInt(newData.tamponi),
+          "casi_testati": parseInt(newData.casi_testati.Int64)
         })
         .then((res) => {
           const dataUpdate = [...data];
@@ -141,8 +147,13 @@ function TrendNazionale() {
           dataUpdate[index] = newData;
           setData([...dataUpdate]);
           resolve();
+
           setIserror(false);
           setErrorMessages([]);
+
+          // success
+          setSuccessMessages([res.data.message])
+          setIssuccess(true); 
         })
         .catch((error) => {
           setErrorMessages(["Update failed! Server error"]);
@@ -161,22 +172,85 @@ function TrendNazionale() {
   const handleRowAdd = (newData, resolve) => {
     //validation
     let errorList = [];
+    if(newData.data === undefined || !validateDate(newData.data)) {
+      errorList.push("Perfavore inserisci una data con formato corretto");
+    }
+    if (newData.ricoverati_con_sintomi === undefined) {
+      errorList.push("Please enter ricoverati_con_sintomi");
+    }
+    if (newData.terapia_intensiva === undefined) {
+      errorList.push("Please enter terapia_intensiva");
+    }
+    if (newData.totale_ospedalizzati === undefined) {
+      errorList.push("Please enter totale_ospedalizzati");
+    }
+    if (newData.isolamento_domiciliare === undefined) {
+      errorList.push("Please enter isolamento_domiciliare");
+    }
+    if (newData.totale_positivi === undefined) {
+      errorList.push("Please enter totale_positivi");
+    }
+    if (newData.variazione_totale_positivi === undefined) {
+      errorList.push("Please enter variazione_totale_positivi");
+    }
+    if (newData.nuovi_positivi === undefined) {
+      errorList.push("Please enter nuovi_positivi");
+    }
+    if (newData.dimessi_guariti === undefined) {
+      errorList.push("Please enter dimessi_guariti");
+    }
+    if (newData.deceduti === undefined) {
+      errorList.push("Please enter deceduti");
+    }
+    if (newData.totale_casi === undefined) {
+      errorList.push("Please enter totale_casi");
+    }
+    if (newData.tamponi === undefined) {
+      errorList.push("Please enter tamponi");
+    }
+    if (newData.casi_testati === undefined) {
+      errorList.push("Please enter casi_testati");
+    }
+
+    // fix bug casi_testati
+    // var memcs = newData.casi_testati;
+    // newData.casi_testati = newData.casi_testati.Int64;
+
+    // parseInt dei campi
     /*
-    if (newData.first_name === undefined) {
-      errorList.push("Please enter first name");
-    }
-    if (newData.last_name === undefined) {
-      errorList.push("Please enter last name");
-    }
-    if (newData.email === undefined || validateEmail(newData.email) === false) {
-      errorList.push("Please enter a valid email");
-    }
+    newData.ricoverati_con_sintomi = parseInt(newData.ricoverati_con_sintomi);
+    newData.terapia_intensiva = parseInt(newData.terapia_intensiva);
+    newData.totale_ospedalizzati = parseInt(newData.totale_ospedalizzati);
+    newData.isolamento_domiciliare = parseInt(newData.isolamento_domiciliare);
+    newData.totale_positivi = parseInt(newData.totale_positivi);
+    newData.variazione_totale_positivi = parseInt(newData.variazione_totale_positivi);
+    newData.nuovi_positivi = parseInt(newData.nuovi_positivi);
+    newData.dimessi_guariti = parseInt(newData.dimessi_guariti);
+    newData.deceduti = parseInt(newData.deceduti);
+    newData.totale_casi = parseInt(newData.totale_casi);
+    newData.tamponi = parseInt(newData.tamponi);
+    newData.casi_testati = parseInt(newData.casi_testati);
     */
 
     if (errorList.length < 1) {
       //no error
       api
-        .post("/users", newData)
+        //.post("/andamento/nazionale", newData)
+        .post("/andamento/nazionale", {
+          "data": newData.data,
+          "ricoverati_con_sintomi": parseInt(newData.ricoverati_con_sintomi),
+          "terapia_intensiva": parseInt(newData.terapia_intensiva),
+          "totale_ospedalizzati": parseInt(newData.totale_ospedalizzati),
+          "isolamento_domiciliare": parseInt(newData.isolamento_domiciliare),
+          "totale_positivi": parseInt(newData.totale_positivi),
+          "variazione_totale_positivi": parseInt(newData.variazione_totale_positivi),
+          "nuovi_positivi": parseInt(newData.nuovi_positivi),
+          "dimessi_guariti": parseInt(newData.dimessi_guariti),
+          "deceduti": parseInt(newData.deceduti),
+          "totale_casi": parseInt(newData.totale_casi),
+          "tamponi": parseInt(newData.tamponi),
+          "casi_testati": parseInt(newData.casi_testati.Int64)
+        })
         .then((res) => {
           let dataToAdd = [...data];
           dataToAdd.push(newData);
@@ -184,9 +258,14 @@ function TrendNazionale() {
           resolve();
           setErrorMessages([]);
           setIserror(false);
+
+          // success
+          setSuccessMessages([res.data.message])
+          setIssuccess(true);
         })
         .catch((error) => {
-          setErrorMessages(["Cannot add data. Server error!"]);
+          errorList.push(error.response.data.message);
+          setErrorMessages(errorList);
           setIserror(true);
           resolve();
         });
@@ -199,16 +278,21 @@ function TrendNazionale() {
 
   const handleRowDelete = (oldData, resolve) => {
     api
-      .delete("/users/" + oldData.id)
+      .delete("/andamento/nazionale/data/" + oldData.data)
       .then((res) => {
         const dataDelete = [...data];
         const index = oldData.tableData.id;
         dataDelete.splice(index, 1);
         setData([...dataDelete]);
         resolve();
+
+        // success
+        setSuccessMessages([res.data.message])
+        setIssuccess(true);
       })
       .catch((error) => {
-        setErrorMessages(["Delete failed! Server error"]);
+        //setErrorMessages(["Delete failed! Server error"]);
+        setErrorMessages(error.response.data.message);
         setIserror(true);
         resolve();
       });
@@ -220,6 +304,13 @@ function TrendNazionale() {
         {iserror && (
           <Alert severity="error">
             {errorMessages.map((msg, i) => {
+              return <div key={i}>{msg}</div>;
+            })}
+          </Alert>
+        )}
+        {issuccess && (
+          <Alert severity="success">
+            {successMessages.map((msg, i) => {
               return <div key={i}>{msg}</div>;
             })}
           </Alert>
