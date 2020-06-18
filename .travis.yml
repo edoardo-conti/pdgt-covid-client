@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+- stable
+cache:
+  directories:
+  - node_modules
+script:
+- npm run build
+deploy:
+  provider: heroku
+  api_key:
+    secure: RUhIW1Ji/2x+JH1e5GFJiQnlAQFPwlwURHxwjudIRaTLtWrAtoTnXtrmLPHF1BLtrUSVGt3pJ6gKDVODghTZAqzpY1oD28xHJK7gbZlqE5xvVePMqASV7Nu8/5mNvnwrwt9Ixab66fvIwIhLzf8d1w/Gl7fRfC+2mLyRWTJYYtV94bgm+L75iSNmy0MSyFc0h5dnmtC8E6nQOokC5r4uPfRnaoU8S+yDblS5LFTO67IH0DpuCfyGJtaCRBrP96ckE+5fT1kydE9+b7Xiv5veOgxaLb0hWsTYJfSztkdP9mbHs0hXRYASWQuUX03mJqQlWnjpIgt/PjfvRwiklc/n/K1iOXKodpSH+uNuc1S7SVsCoN96SvInNIHKa2JgkCdGLDSeacWEvHxkQzFQl4Qvf6JbcqfsG7VDWMRNowqmJs30O6gcoozXzNsnFPVJaHfMQ36sT9UI/eQtNAYvuAC2JzVrujKyi5HjvVewicShl8vZdpILPqZLb147uCACvnLKRFWKWp52B+L11aPyw+6LT1Xti7+RByO5rcfMw9TS6eOaQjP0vLHSprZaYe6kA5vVSlMvIkdRQwTD1YQIA/TUYgD2k9LSXz7LeRFACgbcAIMQX10F+cvs6ZzSQj3EJjw+JjIXzmPVG1dpFtiy8qjOSYmcyA2gxNmL+x+6X3p3zMM=
+  app: pdgt-covid-client
+  on:
+    repo: edoardo-conti/pdgt-covid-client
+  skip_cleanup: 'true'
