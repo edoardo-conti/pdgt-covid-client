@@ -42,7 +42,7 @@ class App extends Component {
             <ul className="nav navbar-nav navbar-right">
             {
               ( isAuthenticated() ) ? 
-                ( <li onClick={this.logOut}><a href="/">Log out</a> </li>) : 
+                ( <><li><a href="/">{localStorage.getItem('usr-login')}</a></li><li onClick={this.logOut}><a href="/">Log out</a> </li></>) : 
                 ( <li><Link to="/login">Log in</Link></li> )
             }
             </ul>
