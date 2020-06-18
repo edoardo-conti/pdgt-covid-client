@@ -432,6 +432,7 @@ function TrendNazionale() {
     setSelectedDatePick(datepick);
   };
 
+  const [recordByDateHit, setRecordByDateHit] = useState(false);
   const [recordByDate, setRecordByDate] = useState([]);
 
   function searchTrendByDate() {
@@ -444,7 +445,9 @@ function TrendNazionale() {
         }
       )
       .then((res) => {
+        //todo: check richiesta con data inesistente
         setRecordByDate(res.data.data);
+        setRecordByDateHit(true);
       })
       .catch((error) => {
         console.log("Error");
@@ -598,6 +601,7 @@ function TrendNazionale() {
               >
                 Ricerca
               </Button>
+              {recordByDateHit && (
               <p>
                 data: {recordByDate.data}
                 <br />
@@ -625,6 +629,7 @@ function TrendNazionale() {
                 tamponi: {recordByDate.tamponi}
                 <br />
               </p>
+              )}
             </Paper>
           </Grid>
         </Grid>
