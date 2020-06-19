@@ -53,6 +53,11 @@ import Alert from "@material-ui/lab/Alert";
 
 import Map from './gmaps';
 
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+
 require('dotenv').config()
 
 // import { getTrendByRegioni } from "../helper";
@@ -289,6 +294,41 @@ function TrendRegionale() {
       });
   }
 
+  // ricerca picco per regione
+  const [regPeakID, setRegPeakID] = React.useState('');
+  const [recordPeakByReg, setRecordPeakByReg] = useState([]);
+  const [recordPeakByRegHit, setrecordPeakByRegHit] = useState(false);
+
+  const handleChangePeak = (event) => {
+    setRegPeakID(event.target.value);
+  };
+
+  function searchPeakByReg() {
+    api
+      .get(
+        "/andamento/regionale/picco/" + regPeakID,
+        {
+          responseType: "json",
+        }
+      )
+      .then((res) => {
+        setRecordPeakByReg(res.data.data[0]);
+        setrecordPeakByRegHit(true);
+
+        console.log(res.data.data[0]);
+        console.log(res.data.data[0].info);
+
+      })
+      .catch((error) => {
+        console.log(error);
+
+        setErrorMessages([error.response.data.message])
+        setIserror(true);
+      });
+  }
+
+  
+
   // # GOOGLE MAPS
   var dataMapsReal = [];
   var record = {},
@@ -452,6 +492,75 @@ function TrendRegionale() {
         <Paper elevation={2}><Card>
           <CardContent>
             <h2>Ricerca Picco Regionale per regione</h2>
+            <FormControl variant="filled">
+              <InputLabel id="demo-simple-select-filled-label">Regione</InputLabel>
+              <Select
+                labelId="demo-simple-select-filled-label"
+                id="demo-simple-select-filled"
+                value={regPeakID}
+                onChange={handleChangePeak}
+              >
+                <MenuItem value={1}>Piemonte</MenuItem>
+                <MenuItem value={2}>Valle d'Aosta</MenuItem>
+                <MenuItem value={3}>Lombardia</MenuItem>
+                <MenuItem value={5}>Veneto</MenuItem>
+                <MenuItem value={6}>Friuli Venezia Giulia</MenuItem>
+                <MenuItem value={7}>Liguria</MenuItem>
+                <MenuItem value={8}>Emilia-Romagna</MenuItem>
+                <MenuItem value={9}>Toscana</MenuItem>
+                <MenuItem value={10}>Umbria</MenuItem>
+                <MenuItem value={11}>Marche</MenuItem>
+                <MenuItem value={12}>Lazio</MenuItem>
+                <MenuItem value={13}>Abruzzo</MenuItem>
+                <MenuItem value={14}>Molise</MenuItem>
+                <MenuItem value={15}>Campania</MenuItem>
+                <MenuItem value={16}>Puglia</MenuItem>
+                <MenuItem value={17}>Basilicata</MenuItem>
+                <MenuItem value={18}>Calabria</MenuItem>
+                <MenuItem value={19}>Sicilia</MenuItem>
+                <MenuItem value={20}>Sardegna</MenuItem>
+                <MenuItem value={21}>P.A. Bolzano</MenuItem>
+                <MenuItem value={22}>P.A. Trento</MenuItem>
+              </Select>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<SearchIcon />}
+                onClick={() => {
+                  searchPeakByReg();
+                }}
+              >
+                Ricerca
+              </Button>
+            </FormControl>
+            {recordPeakByRegHit && (
+              <p>
+                data: {recordPeakByReg.data}
+                <br />
+                ricoverati con sintomi: {recordPeakByReg.info[0].ricoverati_con_sintomi}
+                <br />
+                terapia intensiva: {recordPeakByReg.info[0].terapia_intensiva}
+                <br />
+                totale ospedalizzati: {recordPeakByReg.info[0].totale_ospedalizzati}
+                <br />
+                isolamento domiciliare: {recordPeakByReg.info[0].isolamento_domiciliare}
+                <br />
+                totale positivi: {recordPeakByReg.info[0].totale_positivi}
+                <br />
+                variazione totale positivi: {recordPeakByReg.info[0].variazione_totale_positivi}
+                <br />
+                nuovi positivi: {recordPeakByReg.info[0].nuovi_positivi}
+                <br />
+                dimessi guariti: {recordPeakByReg.info[0].dimessi_guariti}
+                <br />
+                deceduti: {recordPeakByReg.info[0].deceduti}
+                <br />
+                totale casi: {recordPeakByReg.info[0].totale_casi}
+                <br />
+                tamponi: {recordPeakByReg.info[0].tamponi}
+                <br />
+              </p>
+              )}
           </CardContent>
           </Card></Paper>
         </Grid>

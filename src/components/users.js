@@ -55,9 +55,9 @@ const api = axios.create({
 function User() {
   var columns = [
     {
-      field: 'url',
+      field: 'avatar_url',
       title: 'Avatar',
-      render: rowData => <img alt='avatar' src='{rowData.url}' style={{width: 50, borderRadius: '50%'}}/>
+      render: rowData => <img alt='avatar' src={rowData.avatar_url} style={{width: 50, borderRadius: '50%'}}/>
     },
     { title: "Nome Utente", field: "username" },
     { title: "Password", field: "password" },
