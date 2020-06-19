@@ -18,6 +18,7 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import axios from "axios";
 
@@ -34,10 +35,27 @@ import moment from "moment"
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+import Paper from '@material-ui/core/Paper';
 
 import { isAuthenticated } from "../helper";
 
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
+
+import Button from "@material-ui/core/Button";
+import SearchIcon from "@material-ui/icons/Search";
+
+import TableContainer from '@material-ui/core/TableContainer';
+import Alert from "@material-ui/lab/Alert";
+
+import Map from './gmaps';
+
 // import { getTrendByRegioni } from "../helper";
+
+const GOOGLEMAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -70,6 +88,7 @@ const api = axios.create({
 function TrendRegionale() {
   //table data
   const [data, setData] = useState([]);
+  const [dataloaded, setDadaLoaded] = useState(false);
 
   // table regioni
   const [reg1, setReg1] = useState([]);
@@ -131,7 +150,7 @@ function TrendRegionale() {
       default: break;
     }
     
-    console.log(datatable);
+    //console.log(datatable);
 
     /*
     getTrendByRegioni(regid)
@@ -199,6 +218,7 @@ function TrendRegionale() {
         // store dell'ultima rilevazione in modo da ottenere i dati complessivi più recenti
         var last = res.data.count - 1;
         setData(res.data.data[last].info);
+        setDadaLoaded(true);
         //console.log(res.data.data[104].info);
       })
       .catch((error) => {
@@ -227,11 +247,104 @@ function TrendRegionale() {
       api.get("/andamento/regionale/regione/20").then((res) => {setReg20(res.data.data)}).catch((error) => {console.log("Error")});
       api.get("/andamento/regionale/regione/21").then((res) => {setReg21(res.data.data)}).catch((error) => {console.log("Error")});
     }
-
   }, []);
+
+  // ricerca trend regionale per data (in basso a sinistra)
+  const [selectedDatePick, setSelectedDatePick] = React.useState(
+    new Date("2020-02-24")
+  );
+
+  const handleDateChangePick = (datepick) => {
+    setSelectedDatePick(datepick);
+  };
+
+  const [recordByDateHit, setRecordByDateHit] = useState(false);
+  const [recordByDate, setRecordByDate] = useState([]);
+
+  const [iserror, setIserror] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
+
+  function searchTrendByDate() {
+    api
+      .get(
+        "/andamento/regionale/data/" +
+          moment(selectedDatePick).format("YYYY-MM-DD"),
+        {
+          responseType: "json",
+        }
+      )
+      .then((res) => {
+        //todo: check richiesta con data inesistente
+        setRecordByDate(res.data.data[0].info);
+        setRecordByDateHit(true);
+
+      })
+      .catch((error) => {
+        console.log(error);
+
+        setErrorMessages([error.response.data.message])
+        setIserror(true);
+      });
+  }
+
+  // # GOOGLE MAPS
+  var dataMapsReal = [];
+  var record = {},
+      newRecord = {};
+
+  for(record in data) {
+    newRecord = {
+      regione: data[record].denominazione_regione,
+      latitude: parseFloat(data[record].lat).toPrecision(4),
+      longitude: parseFloat(data[record].long).toPrecision(4),
+      circle: {
+        radius: Math.sqrt(data[record].totale_casi) * 400,
+        options: {
+          strokeColor: "#ff0000"
+        }
+      }
+    }
+
+    dataMapsReal.push(newRecord);
+  }
+
+  //console.log(dataMapsReal);
+
+  /*
+  const dataMaps = [
+    {
+      id: 1,
+      name: "Veneto",
+      latitude: "45.43490485",
+      longitude: "12.33845213"
+    },
+    {
+      id: 2,
+      name: "Valle d'Aosta",
+      latitude: "45.73750286",
+      longitude: "7.320149366"
+    }
+  ];
+  
+  dataMaps[0].circle = {
+    radius: 30000,
+    options: {
+      strokeColor: "#ff0000"
+    }
+  };
+  dataMaps[1].circle = {
+    radius: 60000,
+    options: {
+      strokeColor: "#ff0000"
+    }
+  };
+  */
+
+  var googlemapsapiurl = "https://maps.googleapis.com/maps/api/js?key="+GOOGLEMAPS_API_KEY+"&v=3.exp&libraries=geometry,drawing,places";
 
   return (
       <div className="TrendRegionale container">
+        {!dataloaded ? ( <LinearProgress /> ) : ""}
         {(isAuthenticated()) ?
         <MaterialTable
           title="COVID-19 Andamento Regionale"
@@ -249,15 +362,98 @@ function TrendRegionale() {
           icons={tableIcons}
         />
         }
-        <br></br><br></br>
+        <br></br>
+        <Map
+        center={{ lat: 42.77, lng: 13.12 }}
+        zoom={6}
+        places={dataMapsReal}
+        googleMapURL={googlemapsapiurl}
+        loadingElement={<div style={{ height: `100%` }} />}
+        containerElement={<div style={{ height: `800px` }} />}
+        mapElement={<div style={{ height: `100%` }} />}
+        />
+        <br></br>
         <Grid container spacing={3}>
         <Grid item xs={6}>
-          <Card><CardContent><h2>Ricerca Trend Regionale per data</h2></CardContent></Card>
+        <Paper elevation={2}><Card>
+          {iserror && (
+            <Alert severity="error">
+              {errorMessages.map((msg, i) => {
+                return <div key={i}>{msg}</div>;
+              })}
+            </Alert>
+          )}
+          <CardContent>
+            <h2>Ricerca Trend Regionale per data</h2>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  disableToolbar
+                  variant="inline"
+                  format="yyyy-MM-dd"
+                  margin="normal"
+                  id="date-picker-inline"
+                  value={selectedDatePick}
+                  onChange={handleDateChangePick}
+                  KeyboardButtonProps={{
+                    "aria-label": "change date",
+                  }}
+                />
+              </MuiPickersUtilsProvider>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<SearchIcon />}
+                onClick={() => {
+                  searchTrendByDate();
+                }}
+              >
+                Ricerca
+              </Button>
+              {recordByDateHit ? (
+              <TableContainer component={Paper}>
+                <Table size="small" aria-label="a dense table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell><b>Regione</b></TableCell>
+                      <TableCell><b>codice_regione</b></TableCell>
+                      <TableCell align="right"><b>ricoverati_con_sintomi</b></TableCell>
+                      <TableCell align="right"><b>terapia_intensiva</b></TableCell>
+                      <TableCell align="right"><b>totale_ospedalizzati</b></TableCell>
+                      <TableCell align="right"><b>isolamento_domiciliare</b></TableCell>
+                      <TableCell align="right"><b>totale_positivi</b></TableCell>
+                      <TableCell align="right"><b>variazione_totale_positivi</b></TableCell>
+                      <TableCell align="right"><b>nuovi_positivi</b></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                  {recordByDate.map((record) => (
+                      <TableRow key={record.codice_regione}>
+                        <TableCell component="th" scope="row">{record.denominazione_regione}</TableCell>
+                        <TableCell>{record.codice_regione}</TableCell>
+                        <TableCell align="right">{record.ricoverati_con_sintomi}</TableCell>
+                        <TableCell align="right">{record.terapia_intensiva}</TableCell>
+                        <TableCell align="right">{record.totale_ospedalizzati}</TableCell>
+                        <TableCell align="right">{record.isolamento_domiciliare}</TableCell>
+                        <TableCell align="right">{record.totale_positivi}</TableCell>
+                        <TableCell align="right">{record.variazione_totale_positivi}</TableCell>
+                        <TableCell align="right">{record.nuovi_positivi}</TableCell>
+                      </TableRow>
+                  ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              ) : ""}
+          </CardContent>
+          </Card></Paper>
         </Grid>
         <Grid item xs={6}>
-          <Card><CardContent><h2>Ricerca Picco Regionale per regione</h2></CardContent></Card>
+        <Paper elevation={2}><Card>
+          <CardContent>
+            <h2>Ricerca Picco Regionale per regione</h2>
+          </CardContent>
+          </Card></Paper>
         </Grid>
-      </Grid>
+      </Grid>      
       </div>
   );
 }
