@@ -361,20 +361,20 @@ function TrendNazionale() {
         //.post("/andamento/nazionale", newData)
         .post("/andamento/nazionale", {
           data: newData.data,
-          ricoverati_con_sintomi: parseInt(newData.ricoverati_con_sintomi),
-          terapia_intensiva: parseInt(newData.terapia_intensiva),
-          totale_ospedalizzati: parseInt(newData.totale_ospedalizzati),
-          isolamento_domiciliare: parseInt(newData.isolamento_domiciliare),
-          totale_positivi: parseInt(newData.totale_positivi),
-          variazione_totale_positivi: parseInt(
+          ricoverati_con_sintomi: newData.ricoverati_con_sintomi,
+          terapia_intensiva: newData.terapia_intensiva,
+          totale_ospedalizzati: newData.totale_ospedalizzati,
+          isolamento_domiciliare: newData.isolamento_domiciliare,
+          totale_positivi: newData.totale_positivi,
+          variazione_totale_positivi: 
             newData.variazione_totale_positivi
-          ),
-          nuovi_positivi: parseInt(newData.nuovi_positivi),
-          dimessi_guariti: parseInt(newData.dimessi_guariti),
-          deceduti: parseInt(newData.deceduti),
-          totale_casi: parseInt(newData.totale_casi),
-          tamponi: parseInt(newData.tamponi),
-          casi_testati: parseInt(newData.casi_testati.Int64),
+          ,
+          nuovi_positivi: newData.nuovi_positivi,
+          dimessi_guariti: newData.dimessi_guariti,
+          deceduti: newData.deceduti,
+          totale_casi: newData.totale_casi,
+          tamponi: newData.tamponi,
+          casi_testati: newData.casi_testati.Int64,
         })
         .then((res) => {
           let dataToAdd = [...data];
@@ -434,6 +434,8 @@ function TrendNazionale() {
 
   const [recordByDateHit, setRecordByDateHit] = useState(false);
   const [recordByDate, setRecordByDate] = useState([]);
+  const [iserrorDate, setIsErrorDate] = useState(false);
+  const [errorDateMessages, setErrorDateMessages] = useState([]);
 
   function searchTrendByDate() {
     api
@@ -450,7 +452,10 @@ function TrendNazionale() {
         setRecordByDateHit(true);
       })
       .catch((error) => {
-        console.log("Error");
+        console.log(error);
+
+        setErrorDateMessages([error.response.data.message])
+        setIsErrorDate(true);
       });
   }
 
@@ -576,6 +581,13 @@ function TrendNazionale() {
           </Grid>
           <Grid item xs={6}>
             <Paper className={classes.paper}>
+                {iserrorDate && (
+                <Alert severity="error">
+                  {errorDateMessages.map((msg, i) => {
+                    return <div key={i}>{msg}</div>;
+                  })}
+                </Alert>
+              )}
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                   disableToolbar
