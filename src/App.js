@@ -1,62 +1,208 @@
-import React, { Component } from 'react';
-import Home from './components/home';
+import React from "react";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import clsx from "clsx";
+// GUI
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import Drawer from "@material-ui/core/Drawer";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import List from "@material-ui/core/List";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+// components
+import Home from "./components/home";
+import Login from "./components/login";
+import Users from "./components/users";
+import TrendNazionale from "./components/trendNazionale";
+import TrendRegionale from "./components/trendRegionale";
+// helper
+import { isAuthenticated } from "./helper";
 
-import Login from './components/login';
-import Users from './components/users';
+const drawerWidth = 240;
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+  },
+  appBar: {
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  appBarShift: {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerWidth,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  hide: {
+    display: "none",
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: drawerWidth,
+  },
+  drawerHeader: {
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(0, 1),
+    ...theme.mixins.toolbar,
+    justifyContent: "flex-end",
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: -drawerWidth,
+  },
+  contentShift: {
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 0,
+  },
+}));
 
-import TrendNazionale from './components/trendNazionale';
-import TrendRegionale from './components/trendRegionale';
+function ListItemLink(props) {
+  return <ListItem button component="a" {...props} />;
+}
 
-import {  BrowserRouter as Router, Link, Route } from 'react-router-dom';
-import { isAuthenticated } from './helper';
+function logOut() {
+  // semplicemente elimino il token dal local storage del browser
+  localStorage.removeItem("x-access-token");
+}
 
-class App extends Component {
+function App() {
+  // stili
+  const classes = useStyles();
+  const theme = useTheme();
+  const [open, setOpen] = React.useState(false);
 
-  logOut() {
-    // #simpleisthebest
-    localStorage.removeItem('x-access-token');
-  }
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
 
-  render() {
-    return (
-      <Router>
-      <div>
-        <nav className="navbar navbar-default">
-          <div className="container-fluid container">
-            <div className="navbar-header">
-              <span className="navbar-brand"><Link to="/">pdgt-covid</Link></span>
-            </div>
-            <ul className="nav navbar-nav">
-              <li>
-                <Link to="/trend/nazionale">Trend Nazionale</Link>
-              </li>
-              <li>
-                <Link to="/trend/regionale">Trend Regionale</Link>
-              </li>
-              <li>
-                {
-                ( isAuthenticated() ) ? <Link to="/utenti">Utenti</Link>:  ''
-                }
-              </li>
-            </ul>
-            <ul className="nav navbar-nav navbar-right">
-            {
-              ( isAuthenticated() ) ? 
-                ( <><li><a href="/">{localStorage.getItem('usr-login')}</a></li><li onClick={this.logOut}><a href="/">Log out</a> </li></>) : 
-                ( <li><Link to="/login">Log in</Link></li> )
-            }
-            </ul>
+  return (
+    <Router>
+      <div className={classes.root}>
+        <CssBaseline />
+        <AppBar
+          position="fixed"
+          className={clsx(classes.appBar, {
+            [classes.appBarShift]: open,
+          })}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, open && classes.hide)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" className={classes.title} noWrap>
+              pdgt-covid
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          className={classes.drawer}
+          variant="persistent"
+          anchor="left"
+          open={open}
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+        >
+          <div className={classes.drawerHeader}>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === "ltr" ? (
+                <ChevronLeftIcon />
+              ) : (
+                <ChevronRightIcon />
+              )}
+            </IconButton>
           </div>
-        </nav>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/trend/nazionale" component={TrendNazionale} />
-        <Route exact path="/trend/regionale" component={TrendRegionale} />
-        <Route exact path="/utenti" component={Users} />
-        <Route exact path="/login" component={Login} />
+          <Divider />
+          <List>
+            <ListItemLink href="/">
+              <ListItemText primary="Homepage" />
+            </ListItemLink>
+            <ListItemLink href="/trend/nazionale">
+              <ListItemText primary="Trend Nazionale" />
+            </ListItemLink>
+            <ListItemLink href="/trend/regionale">
+              <ListItemText primary="Trend Regionale" />
+            </ListItemLink>
+            {isAuthenticated() ? (
+              <ListItemLink href="/utenti">
+                <ListItemText primary="Utenti" />
+              </ListItemLink>
+            ) : (
+              ""
+            )}
+          </List>
+          {isAuthenticated() ? (
+            <Divider />
+          ) : (
+            <List>
+              <ListItemLink href="/login">
+                <ListItemText primary="Accedi" />
+              </ListItemLink>
+            </List>
+          )}
+          {isAuthenticated() ? (
+            <List>
+              <ListItem>
+                <ListItemText primary={localStorage.getItem("usr-login")} />
+              </ListItem>
+              <ListItemLink href="/" onClick={logOut}>
+                <ListItemText primary="Esci" />
+              </ListItemLink>
+            </List>
+          ) : (
+            ""
+          )}
+        </Drawer>
+        <main
+          className={clsx(classes.content, {
+            [classes.contentShift]: open,
+          })}
+        >
+          <div className={classes.drawerHeader} />
+        </main>
       </div>
-      </Router>
-    );
-  }
+      <Route exact path="/" component={Home} />
+      <Route exact path="/trend/nazionale" component={TrendNazionale} />
+      <Route exact path="/trend/regionale" component={TrendRegionale} />
+      <Route exact path="/utenti" component={Users} />
+      <Route exact path="/login" component={Login} />
+    </Router>
+  );
 }
 
 export default App;

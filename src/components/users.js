@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { isAuthenticated, getUsers } from "../helper";
+import React, { useState, useEffect, forwardRef } from "react";
 import { Redirect } from "react-router-dom";
-
-import { forwardRef } from "react";
+// helper
+import { isAuthenticated, getUsers, api } from "../helper";
+// GUI
 import Grid from "@material-ui/core/Grid";
-
 import MaterialTable from "material-table";
 import AddBox from "@material-ui/icons/AddBox";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
@@ -21,8 +20,9 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
-import axios from "axios";
 import Alert from "@material-ui/lab/Alert";
+// css
+import "./users.css"
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -48,65 +48,75 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
 
-const api = axios.create({
-  baseURL: `https://pdgt-covid.herokuapp.com`,
-});
-
 function User() {
+  // colonne tabella utenti
   var columns = [
     {
-      field: 'avatar_url',
-      title: 'Avatar',
-      render: rowData => <img alt='avatar' src={rowData.avatar_url} style={{width: 50, borderRadius: '50%'}}/>
+      //editable: 'never',
+      field: "avatar_url",
+      title: "Avatar",
+      render: (rowData) => (
+        <img
+          alt="avatar"
+          src={rowData.avatar_url}
+          style={{ width: 50, borderRadius: "50%" }}
+        />
+      ),
     },
     { title: "Nome Utente", field: "username" },
     { title: "Password", field: "password" },
   ];
 
+  // users data
   const [data, setData] = useState([]); //table data
   const [auth, setAuth] = useState(true); //auth state
-
-  //for error and success handling
+  // errori
   const [iserror, setIserror] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
-
+  // messaggi
   const [issuccess, setIssuccess] = useState(false);
   const [successMessages, setSuccessMessages] = useState([]);
 
   useEffect(() => {
+    // disponibile sono se utente autenticato
     if (isAuthenticated())
       getUsers()
         .then((users) => {
           setData(users);
         })
         .catch((err) => {
-          alert("User Not Authenticated");
+          alert("Utente non Autenticato!");
           setAuth(false);
         });
     else {
-      alert("User Not Authenticated");
+      alert("Utente non Autenticato!");
       setAuth(false);
     }
   }, []);
 
   const handleRowAdd = (newData, resolve) => {
-    // validation
     let errorList = [];
+
+    // validazione dei campi
     if (newData.username === undefined) {
-      errorList.push("Please enter username");
+      errorList.push("Per favore compila username");
     }
     if (newData.password === undefined) {
-      errorList.push("Please enter password");
+      errorList.push("Per favore compila password");
     }
 
-    // trim fields
+    // trim dei campi
     newData.username = newData.username.trim();
     newData.password = newData.password.trim();
 
+    // no error
     if (errorList.length < 1) {
-      // no error
+      // POST /utenti/signup {newData}
       api
-        .post("/utenti/signup", newData)
+        .post("/utenti/signup", {
+          'username': newData.username,
+          'password': newData.password,
+        })
         .then((res) => {
           let dataToAdd = [...data];
           dataToAdd.push(newData);
@@ -114,7 +124,6 @@ function User() {
           resolve();
           setErrorMessages([]);
           setIserror(false);
-
           setSuccessMessages([res.data.message]);
           setIssuccess(true);
         })
@@ -132,9 +141,10 @@ function User() {
   };
 
   const handleRowDelete = (oldData, resolve) => {
-    // errors
+    // errori
     let errorList = [];
 
+    // DELETE /utenti/:byusername
     api
       .delete("/utenti/" + oldData.username, {
         headers: {
@@ -148,7 +158,6 @@ function User() {
         dataDelete.splice(index, 1);
         setData([...dataDelete]);
         resolve();
-
         setSuccessMessages([res.data.message]);
         setIssuccess(true);
       })
@@ -183,7 +192,7 @@ function User() {
             )}
           </div>
           <MaterialTable
-            title="Utenti"
+            title="Tabella Utenti"
             columns={columns}
             data={data}
             icons={tableIcons}
@@ -206,53 +215,3 @@ function User() {
 }
 
 export default User;
-
-/*
-class Users extends Component {
-  constructor() {
-    super();
-    this.state = { users: [], auth: true };
-  }
-
-  componentDidMount() {
-    if (isAuthenticated())
-      getUsers()
-        .then((users) => {
-          this.setState({ users });
-        })
-        .catch((err) => {
-          alert("User Not Authenticated");
-          this.setState({ auth: false });
-        });
-    else {
-      alert("User Not Authenticated");
-      this.setState({ auth: false });
-    }
-  }
-
-  render() {
-    return (
-      <div>
-        {this.state.auth ? "" : <Redirect to="/" />}
-        <h3 className="text-center">Lista Utenti</h3>
-        <hr />
-        {this.state.users.map((user) => (
-          <div className="col-sm-10 col-sm-offset-1" key={user.username}>
-            <div className="panel panel-success">
-              <div className="panel-heading">
-                <h3 className="panel-title">
-                  <span className="btn">{user.username}</span>
-                </h3>
-              </div>
-              <div className="panel-body">
-                <p> {user.password} </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-}
-export default Users;
-*/

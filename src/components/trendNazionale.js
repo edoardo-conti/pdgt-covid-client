@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from "react";
-import "./trendNazionale.css";
-import { forwardRef } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
+// GUI
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-
-import { isAuthenticated } from "../helper";
-
 import MaterialTable from "material-table";
 import AddBox from "@material-ui/icons/AddBox";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
@@ -22,14 +18,17 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
-import axios from "axios";
 import Alert from "@material-ui/lab/Alert";
-
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-
-// import per grafico
+import Button from "@material-ui/core/Button";
+import SearchIcon from "@material-ui/icons/Search";
+import Divider from "@material-ui/core/Divider";
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+// chart
 import Paper from "@material-ui/core/Paper";
 import {
   Chart,
@@ -41,18 +40,19 @@ import {
 import { ArgumentScale, Animation } from "@devexpress/dx-react-chart";
 import { scalePoint } from "d3-scale";
 import { withStyles } from "@material-ui/core/styles";
-
+// date handler
 import DateFnsUtils from "@date-io/date-fns";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
-
-import Button from "@material-ui/core/Button";
-import SearchIcon from "@material-ui/icons/Search";
-
 import moment from "moment";
+// css
+import "./trendNazionale.css";
+// helper.js
+import { isAuthenticated, validateDate, api } from "../helper";
 
+// chart const
 const chartRootStyles = {
   chart: {
     paddingRight: "20px",
@@ -75,7 +75,6 @@ const legendItemStyles = {
     flexDirection: "column",
   },
 };
-
 const ChartRootBase = ({ classes, ...restProps }) => (
   <Chart.Root {...restProps} className={classes.chart} />
 );
@@ -101,6 +100,7 @@ const LegendItem = withStyles(legendItemStyles, { name: "LegendItem" })(
   LegendItemBase
 );
 
+// table const
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -124,7 +124,6 @@ const tableIcons = {
   ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
-
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -142,50 +141,52 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const api = axios.create({
-  baseURL: `https://pdgt-covid.herokuapp.com`,
-});
-
-function validateDate(input) {
-  // check
-  var regEx = /^\d{4}-\d{2}-\d{2}$/;
-
-  return input.match(regEx);
-}
-
 function TrendNazionale() {
   //table auth
   const [auth, setAuth] = useState([]);
 
+  // colonne tabelle popolate da dati API
   var columns = [
-    { title: "data", field: "data", editable: "onAdd" },
-    { title: "stato", field: "stato", hidden: true },
-    { title: "ricoverati_con_sintomi", field: "ricoverati_con_sintomi" },
-    { title: "terapia_intensiva", field: "terapia_intensiva" },
-    { title: "totale_ospedalizzati", field: "totale_ospedalizzati" },
-    { title: "isolamento_domiciliare", field: "isolamento_domiciliare" },
-    { title: "totale_positivi", field: "totale_positivi" },
+    { title: "Data", field: "data", editable: "onAdd", initialEditValue: '2020-02-23' },
+    { title: "Stato", field: "stato", hidden: true },
     {
-      title: "variazione_totale_positivi",
-      field: "variazione_totale_positivi",
+      title: "Ricoverati sintomatici",
+      field: "ricoverati_con_sintomi",
+      type: "numeric",
     },
-    { title: "nuovi_positivi", field: "nuovi_positivi" },
-    { title: "dimessi_guariti", field: "dimessi_guariti" },
-    { title: "deceduti", field: "deceduti" },
-    { title: "totale_casi", field: "totale_casi" },
-    { title: "tamponi", field: "tamponi" },
-    { title: "casi_testati", field: "casi_testati.Int64" },
+    { title: "Terapia Intensiva", field: "terapia_intensiva", type: "numeric" },
+    {
+      title: "Totale Ospedalizzati",
+      field: "totale_ospedalizzati",
+      type: "numeric",
+    },
+    {
+      title: "Isolamento Domiciliare",
+      field: "isolamento_domiciliare",
+      type: "numeric",
+    },
+    { title: "Totale Positivi", field: "totale_positivi", type: "numeric" },
+    {
+      title: "Variazione Totale Positivi",
+      field: "variazione_totale_positivi",
+      type: "numeric",
+    },
+    { title: "Nuovi Positivi", field: "nuovi_positivi", type: "numeric" },
+    { title: "Dimessi Guariti", field: "dimessi_guariti", type: "numeric" },
+    { title: "Deceduti", field: "deceduti", type: "numeric" },
+    { title: "Totale Casi", field: "totale_casi", type: "numeric" },
+    { title: "Tamponi", field: "tamponi", type: "numeric" },
+    { title: "Casi Testati", field: "casi_testati.Int64", type: "numeric" },
   ];
 
   //table data
   const [data, setData] = useState([]);
   //picco
   const [picco, setPicco] = useState([]);
-
-  //for error handling
+  //gestione errori
   const [iserror, setIserror] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
-
+  //gestione messaggi
   const [issuccess, setIssuccess] = useState(false);
   const [successMessages, setSuccessMessages] = useState([]);
 
@@ -196,6 +197,7 @@ function TrendNazionale() {
       setAuth(false);
     }
 
+    // GET /andamento/nazionale
     api
       .get("/andamento/nazionale", {
         responseType: "json",
@@ -206,7 +208,7 @@ function TrendNazionale() {
       .catch((error) => {
         console.log("Error");
       });
-
+    // GET /andamento/nazionale/picco
     api
       .get("/andamento/nazionale/picco", {
         responseType: "json",
@@ -221,12 +223,11 @@ function TrendNazionale() {
 
   // data per grafico
   const datagraph = [];
-
   data.map(function (record) {
     datagraph.push({
       data: record.data,
       nuovi_positivi: record.nuovi_positivi,
-      terapia_intensiva: record.terapia_intensiva
+      terapia_intensiva: record.terapia_intensiva,
     });
 
     return null;
@@ -235,20 +236,46 @@ function TrendNazionale() {
   const handleRowUpdate = (newData, oldData, resolve) => {
     //validation
     let errorList = [];
-    /*
+  
     if (newData.ricoverati_con_sintomi === "") {
-      errorList.push("compilare il campo ricoverati_con_sintomi");
+      errorList.push("Per favore compila ricoverati_con_sintomi");
     }
     if (newData.terapia_intensiva === "") {
-      errorList.push("compilare il campo terapia_intensiva");
+      errorList.push("Per favore compila terapia_intensiva");
     }
-    if (newData.totale_ospedalizzati === "" || validateField(newData.totale_ospedalizzati) === false) {
-      errorList.push("compilare il campo totale_ospedalizzati correttamente");
+    if (newData.totale_ospedalizzati === "") {
+      errorList.push("Per favore compila totale_ospedalizzati");
     }
-    */
+    if (newData.isolamento_domiciliare === "") {
+      errorList.push("Per favore compila isolamento_domiciliare");
+    }
+    if (newData.totale_positivi === "") {
+      errorList.push("Per favore compila totale_positivi");
+    }
+    if (newData.variazione_totale_positivi === "") {
+      errorList.push("Per favore compila variazione_totale_positivi");
+    }
+    if (newData.nuovi_positivi === "") {
+      errorList.push("Per favore compila nuovi_positivi");
+    }
+    if (newData.dimessi_guariti === "") {
+      errorList.push("Per favore compila dimessi_guariti");
+    }
+    if (newData.deceduti === "") {
+      errorList.push("Per favore compila deceduti");
+    }
+    if (newData.totale_casi === "") {
+      errorList.push("Per favore compila totale_casi");
+    }
+    if (newData.tamponi === "") {
+      errorList.push("Per favore compila tamponi");
+    }
+    if (newData.casi_testati === "") {
+      errorList.push("Per favore compila casi_testati");
+    }
 
     if (errorList.length < 1) {
-      // PATCH request
+      // PATCH /andamento/nazionale/data/:bydate
       api
         .patch("/andamento/nazionale/data/" + newData.data, {
           ricoverati_con_sintomi: parseInt(newData.ricoverati_con_sintomi),
@@ -272,16 +299,17 @@ function TrendNazionale() {
           dataUpdate[index] = newData;
           setData([...dataUpdate]);
           resolve();
-
+          // errori
           setIserror(false);
           setErrorMessages([]);
-
-          // success
+          // messaggi
           setSuccessMessages([res.data.message]);
           setIssuccess(true);
         })
         .catch((error) => {
-          setErrorMessages(["Update failed! Server error"]);
+          // errori
+          errorList.push(error.response.data.message);
+          setErrorMessages(errorList);
           setIserror(true);
           resolve();
         });
@@ -295,70 +323,51 @@ function TrendNazionale() {
   const handleRowAdd = (newData, resolve) => {
     //validation
     let errorList = [];
+
     if (newData.data === undefined || !validateDate(newData.data)) {
-      errorList.push("Perfavore inserisci una data con formato corretto");
+      errorList.push("Per favore inserisci una data con formato corretto");
     }
     if (newData.ricoverati_con_sintomi === undefined) {
-      errorList.push("Please enter ricoverati_con_sintomi");
+      errorList.push("Per favore compila ricoverati_con_sintomi");
     }
     if (newData.terapia_intensiva === undefined) {
-      errorList.push("Please enter terapia_intensiva");
+      errorList.push("Per favore compila terapia_intensiva");
     }
     if (newData.totale_ospedalizzati === undefined) {
-      errorList.push("Please enter totale_ospedalizzati");
+      errorList.push("Per favore compila totale_ospedalizzati");
     }
     if (newData.isolamento_domiciliare === undefined) {
-      errorList.push("Please enter isolamento_domiciliare");
+      errorList.push("Per favore compila isolamento_domiciliare");
     }
     if (newData.totale_positivi === undefined) {
-      errorList.push("Please enter totale_positivi");
+      errorList.push("Per favore compila totale_positivi");
     }
     if (newData.variazione_totale_positivi === undefined) {
-      errorList.push("Please enter variazione_totale_positivi");
+      errorList.push("Per favore compila variazione_totale_positivi");
     }
     if (newData.nuovi_positivi === undefined) {
-      errorList.push("Please enter nuovi_positivi");
+      errorList.push("Per favore compila nuovi_positivi");
     }
     if (newData.dimessi_guariti === undefined) {
-      errorList.push("Please enter dimessi_guariti");
+      errorList.push("Per favore compila dimessi_guariti");
     }
     if (newData.deceduti === undefined) {
-      errorList.push("Please enter deceduti");
+      errorList.push("Per favore compila deceduti");
     }
     if (newData.totale_casi === undefined) {
-      errorList.push("Please enter totale_casi");
+      errorList.push("Per favore compila totale_casi");
     }
     if (newData.tamponi === undefined) {
-      errorList.push("Please enter tamponi");
+      errorList.push("Per favore compila tamponi");
     }
     if (newData.casi_testati === undefined) {
-      errorList.push("Please enter casi_testati");
+      errorList.push("Per favore compila casi_testati");
     }
 
-    // fix bug casi_testati
-    // var memcs = newData.casi_testati;
-    // newData.casi_testati = newData.casi_testati.Int64;
-
-    // parseInt dei campi
-    /*
-    newData.ricoverati_con_sintomi = parseInt(newData.ricoverati_con_sintomi);
-    newData.terapia_intensiva = parseInt(newData.terapia_intensiva);
-    newData.totale_ospedalizzati = parseInt(newData.totale_ospedalizzati);
-    newData.isolamento_domiciliare = parseInt(newData.isolamento_domiciliare);
-    newData.totale_positivi = parseInt(newData.totale_positivi);
-    newData.variazione_totale_positivi = parseInt(newData.variazione_totale_positivi);
-    newData.nuovi_positivi = parseInt(newData.nuovi_positivi);
-    newData.dimessi_guariti = parseInt(newData.dimessi_guariti);
-    newData.deceduti = parseInt(newData.deceduti);
-    newData.totale_casi = parseInt(newData.totale_casi);
-    newData.tamponi = parseInt(newData.tamponi);
-    newData.casi_testati = parseInt(newData.casi_testati);
-    */
-
+    //se nessun errore...
     if (errorList.length < 1) {
-      //no error
       api
-        //.post("/andamento/nazionale", newData)
+        // POST /andamento/nazionale {newData}
         .post("/andamento/nazionale", {
           data: newData.data,
           ricoverati_con_sintomi: newData.ricoverati_con_sintomi,
@@ -366,9 +375,7 @@ function TrendNazionale() {
           totale_ospedalizzati: newData.totale_ospedalizzati,
           isolamento_domiciliare: newData.isolamento_domiciliare,
           totale_positivi: newData.totale_positivi,
-          variazione_totale_positivi: 
-            newData.variazione_totale_positivi
-          ,
+          variazione_totale_positivi: newData.variazione_totale_positivi,
           nuovi_positivi: newData.nuovi_positivi,
           dimessi_guariti: newData.dimessi_guariti,
           deceduti: newData.deceduti,
@@ -383,7 +390,6 @@ function TrendNazionale() {
           resolve();
           setErrorMessages([]);
           setIserror(false);
-
           // success
           setSuccessMessages([res.data.message]);
           setIssuccess(true);
@@ -402,6 +408,7 @@ function TrendNazionale() {
   };
 
   const handleRowDelete = (oldData, resolve) => {
+    // DELETE /andamento/nazionale/data/:bydate
     api
       .delete("/andamento/nazionale/data/" + oldData.data)
       .then((res) => {
@@ -410,34 +417,31 @@ function TrendNazionale() {
         dataDelete.splice(index, 1);
         setData([...dataDelete]);
         resolve();
-
         // success
         setSuccessMessages([res.data.message]);
         setIssuccess(true);
       })
       .catch((error) => {
-        //setErrorMessages(["Delete failed! Server error"]);
         setErrorMessages(error.response.data.message);
         setIserror(true);
         resolve();
       });
   };
 
-  // ricerca trend per data (in basso a destra)
+  // ### ricerca trend per data (in basso a destra) ###
   const [selectedDatePick, setSelectedDatePick] = React.useState(
     new Date("2020-02-24")
   );
-
   const handleDateChangePick = (datepick) => {
     setSelectedDatePick(datepick);
   };
-
   const [recordByDateHit, setRecordByDateHit] = useState(false);
   const [recordByDate, setRecordByDate] = useState([]);
   const [iserrorDate, setIsErrorDate] = useState(false);
   const [errorDateMessages, setErrorDateMessages] = useState([]);
 
   function searchTrendByDate() {
+    // GET /andamento/nazionale/data/:bydate
     api
       .get(
         "/andamento/nazionale/data/" +
@@ -447,21 +451,17 @@ function TrendNazionale() {
         }
       )
       .then((res) => {
-        //todo: check richiesta con data inesistente
         setRecordByDate(res.data.data);
         setRecordByDateHit(true);
       })
       .catch((error) => {
-        console.log(error);
-
-        setErrorDateMessages([error.response.data.message])
+        setErrorDateMessages([error.response.data.message]);
         setIsErrorDate(true);
       });
   }
 
+  // useStyles
   const classes = useStyles();
-
-  // get picco nazionale
 
   return (
     <div className="TrendNazionale container">
@@ -504,14 +504,14 @@ function TrendNazionale() {
         />
       ) : (
         <MaterialTable
-          title="COVID-19 Andamento Nazionale"
+          title="Covid-19 Andamento Nazionale"
           columns={columns}
           data={data}
           icons={tableIcons}
         />
       )}
-      <br></br>
-      <br></br>
+      <br />
+      <br />
       <Paper elevation={3}>
         <Chart data={datagraph} rootComponent={ChartRoot}>
           <ArgumentScale factory={scalePoint} />
@@ -534,11 +534,11 @@ function TrendNazionale() {
             itemComponent={LegendItem}
             labelComponent={LegendLabel}
           />
-          <Title text="Andamento COVID-19 in Italia" />
+          <Title text="Nuovi Positivi e Ricoverati in Terapia Intensiva in Italia [24/02/20 - 07/06/20]" />
         </Chart>
       </Paper>
-      <br></br>
-      <br></br>
+      <br />
+      <br />
       <div className={classes.root}>
         <Grid container spacing={3}>
           <Grid item xs={6}>
@@ -549,45 +549,44 @@ function TrendNazionale() {
                   color="textSecondary"
                   gutterBottom
                 >
-                  <h3>Picco Nazionale</h3>
+                  <h3>Picco nazionale di Nuovi Positivi</h3>
                 </Typography>
-                <h4>{picco.data}</h4>
-                <p>
-                  ricoverati con sintomi: {picco.ricoverati_con_sintomi}
-                  <br />
-                  terapia intensiva: {picco.terapia_intensiva}
-                  <br />
-                  totale ospedalizzati: {picco.totale_ospedalizzati}
-                  <br />
-                  isolamento domiciliare: {picco.isolamento_domiciliare}
-                  <br />
-                  totale positivi: {picco.totale_positivi}
-                  <br />
-                  variazione totale positivi: {picco.variazione_totale_positivi}
-                  <br />
-                  nuovi positivi: {picco.nuovi_positivi}
-                  <br />
-                  dimessi guariti: {picco.dimessi_guariti}
-                  <br />
-                  deceduti: {picco.deceduti}
-                  <br />
-                  totale casi: {picco.totale_casi}
-                  <br />
-                  tamponi: {picco.tamponi}
-                  <br />
-                </p>
+                <Divider /><br />
+                <h3>{moment(picco.data).format("YYYY-MM-DD")}</h3>
+                <List>
+                  <ListItem><ListItemText primary="Ricoverati con sintomi" secondary={picco.ricoverati_con_sintomi}/></ListItem>
+                  <ListItem><ListItemText primary="Terapia intensiva" secondary={picco.terapia_intensiva}/></ListItem>
+                  <ListItem><ListItemText primary="Totale ospedalizzati" secondary={picco.totale_ospedalizzati}/></ListItem>
+                  <ListItem><ListItemText primary="Isolamento domiciliare:" secondary={picco.isolamento_domiciliare}/></ListItem>
+                  <ListItem><ListItemText primary="Totale positivi" secondary={picco.totale_positivi}/></ListItem>
+                  <ListItem><ListItemText primary="Variazione totale positivi" secondary={picco.variazione_totale_positivi}/></ListItem>
+                  <ListItem><ListItemText primary="Nuovi positivi" secondary={picco.nuovi_positivi}/></ListItem>
+                  <ListItem><ListItemText primary="Dimessi guariti" secondary={picco.dimessi_guariti}/></ListItem>
+                  <ListItem><ListItemText primary="Deceduti" secondary={picco.deceduti}/></ListItem>
+                  <ListItem><ListItemText primary="Totale casi" secondary={picco.totale_casi}/></ListItem>
+                  <ListItem><ListItemText primary="Tamponi" secondary={picco.tamponi}/></ListItem>
+                </List>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={6}>
-            <Paper className={classes.paper}>
-                {iserrorDate && (
+          <Card className={classes.root}>
+              <CardContent>
+              {iserrorDate && (
                 <Alert severity="error">
                   {errorDateMessages.map((msg, i) => {
                     return <div key={i}>{msg}</div>;
                   })}
                 </Alert>
               )}
+              <Typography
+                  className={classes.title}
+                  color="textSecondary"
+                  gutterBottom
+                >
+                  <h3>Ricerca Trend nazionale per data</h3>
+                </Typography>
+                <Divider /><br />
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                   disableToolbar
@@ -613,36 +612,25 @@ function TrendNazionale() {
               >
                 Ricerca
               </Button>
+              <Divider /><br />
+              {recordByDateHit && <h3>{moment(recordByDate.data).format("YYYY-MM-DD")}</h3> }
               {recordByDateHit && (
-              <p>
-                data: {recordByDate.data}
-                <br />
-                ricoverati con sintomi: {recordByDate.ricoverati_con_sintomi}
-                <br />
-                terapia intensiva: {recordByDate.terapia_intensiva}
-                <br />
-                totale ospedalizzati: {recordByDate.totale_ospedalizzati}
-                <br />
-                isolamento domiciliare: {recordByDate.isolamento_domiciliare}
-                <br />
-                totale positivi: {recordByDate.totale_positivi}
-                <br />
-                variazione totale positivi:{" "}
-                {recordByDate.variazione_totale_positivi}
-                <br />
-                nuovi positivi: {recordByDate.nuovi_positivi}
-                <br />
-                dimessi guariti: {recordByDate.dimessi_guariti}
-                <br />
-                deceduti: {recordByDate.deceduti}
-                <br />
-                totale casi: {recordByDate.totale_casi}
-                <br />
-                tamponi: {recordByDate.tamponi}
-                <br />
-              </p>
+                <List>
+                  <ListItem><ListItemText primary="Ricoverati con sintomi" secondary={recordByDate.ricoverati_con_sintomi}/></ListItem>
+                  <ListItem><ListItemText primary="Terapia intensiva" secondary={recordByDate.terapia_intensiva}/></ListItem>
+                  <ListItem><ListItemText primary="Totale ospedalizzati" secondary={recordByDate.totale_ospedalizzati}/></ListItem>
+                  <ListItem><ListItemText primary="Isolamento domiciliare:" secondary={recordByDate.isolamento_domiciliare}/></ListItem>
+                  <ListItem><ListItemText primary="Totale positivi" secondary={recordByDate.totale_positivi}/></ListItem>
+                  <ListItem><ListItemText primary="Variazione totale positivi" secondary={recordByDate.variazione_totale_positivi}/></ListItem>
+                  <ListItem><ListItemText primary="Nuovi positivi" secondary={recordByDate.nuovi_positivi}/></ListItem>
+                  <ListItem><ListItemText primary="Dimessi guariti" secondary={recordByDate.dimessi_guariti}/></ListItem>
+                  <ListItem><ListItemText primary="Deceduti" secondary={recordByDate.deceduti}/></ListItem>
+                  <ListItem><ListItemText primary="Totale casi" secondary={recordByDate.totale_casi}/></ListItem>
+                  <ListItem><ListItemText primary="Tamponi" secondary={recordByDate.tamponi}/></ListItem>
+                </List>
               )}
-            </Paper>
+            </CardContent>
+            </Card>
           </Grid>
         </Grid>
       </div>
