@@ -151,29 +151,37 @@ function User() {
     // errori
     let errorList = [];
 
-    // DELETE /utenti/:byusername
-    api
-      .delete("/utenti/" + oldData.username, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("x-access-token"),
-        },
-        responseType: "json",
-      })
-      .then((res) => {
-        const dataDelete = [...data];
-        const index = oldData.tableData.id;
-        dataDelete.splice(index, 1);
-        setData([...dataDelete]);
-        resolve();
-        setSuccessMessages([res.data.message]);
-        setIssuccess(true);
-      })
-      .catch((error) => {
-        errorList.push(error.response.data.message);
-        setErrorMessages(errorList);
-        setIserror(true);
-        resolve();
-      });
+    // verifico che non si stia tentando di cancellare l'account in uso
+    if(oldData.username === localStorage.getItem('login-username')) {
+      errorList.push("Impossibile cancellare account in uso.");
+      setErrorMessages(errorList);
+      setIserror(true);
+      resolve();
+    } else {
+      // DELETE /utenti/:byusername
+      api
+        .delete("/utenti/" + oldData.username, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("x-access-token"),
+          },
+          responseType: "json",
+        })
+        .then((res) => {
+          const dataDelete = [...data];
+          const index = oldData.tableData.id;
+          dataDelete.splice(index, 1);
+          setData([...dataDelete]);
+          resolve();
+          setSuccessMessages([res.data.message]);
+          setIssuccess(true);
+        })
+        .catch((error) => {
+          errorList.push(error.response.data.message);
+          setErrorMessages(errorList);
+          setIserror(true);
+          
+        });
+    }
   };
 
   return (

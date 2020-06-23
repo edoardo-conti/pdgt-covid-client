@@ -242,40 +242,40 @@ function TrendNazionale() {
     let errorList = [];
   
     if (newData.ricoverati_con_sintomi === "") {
-      errorList.push("Per favore compila ricoverati_con_sintomi");
+      errorList.push("Per favore compilare ricoverati_con_sintomi");
     }
     if (newData.terapia_intensiva === "") {
-      errorList.push("Per favore compila terapia_intensiva");
+      errorList.push("Per favore compilare terapia_intensiva");
     }
     if (newData.totale_ospedalizzati === "") {
-      errorList.push("Per favore compila totale_ospedalizzati");
+      errorList.push("Per favore compilare totale_ospedalizzati");
     }
     if (newData.isolamento_domiciliare === "") {
-      errorList.push("Per favore compila isolamento_domiciliare");
+      errorList.push("Per favore compilare isolamento_domiciliare");
     }
     if (newData.totale_positivi === "") {
-      errorList.push("Per favore compila totale_positivi");
+      errorList.push("Per favore compilare totale_positivi");
     }
     if (newData.variazione_totale_positivi === "") {
-      errorList.push("Per favore compila variazione_totale_positivi");
+      errorList.push("Per favore compilare variazione_totale_positivi");
     }
     if (newData.nuovi_positivi === "") {
-      errorList.push("Per favore compila nuovi_positivi");
+      errorList.push("Per favore compilare nuovi_positivi");
     }
     if (newData.dimessi_guariti === "") {
-      errorList.push("Per favore compila dimessi_guariti");
+      errorList.push("Per favore compilare dimessi_guariti");
     }
     if (newData.deceduti === "") {
-      errorList.push("Per favore compila deceduti");
+      errorList.push("Per favore compilare deceduti");
     }
     if (newData.totale_casi === "") {
-      errorList.push("Per favore compila totale_casi");
+      errorList.push("Per favore compilare totale_casi");
     }
     if (newData.tamponi === "") {
-      errorList.push("Per favore compila tamponi");
+      errorList.push("Per favore compilare tamponi");
     }
     if (newData.casi_testati === "") {
-      errorList.push("Per favore compila casi_testati");
+      errorList.push("Per favore compilare casi_testati");
     }
 
     if (errorList.length < 1) {
@@ -334,43 +334,43 @@ function TrendNazionale() {
     let errorList = [];
 
     if (newData.data === undefined || !validateDate(newData.data)) {
-      errorList.push("Per favore inserisci una data con formato corretto");
+      errorList.push("Per favore inserire una data con formato corretto");
     }
     if (newData.ricoverati_con_sintomi === undefined) {
-      errorList.push("Per favore compila ricoverati_con_sintomi");
+      errorList.push("Per favore compilare ricoverati_con_sintomi");
     }
     if (newData.terapia_intensiva === undefined) {
-      errorList.push("Per favore compila terapia_intensiva");
+      errorList.push("Per favore compilare terapia_intensiva");
     }
     if (newData.totale_ospedalizzati === undefined) {
-      errorList.push("Per favore compila totale_ospedalizzati");
+      errorList.push("Per favore compilare totale_ospedalizzati");
     }
     if (newData.isolamento_domiciliare === undefined) {
-      errorList.push("Per favore compila isolamento_domiciliare");
+      errorList.push("Per favore compilare isolamento_domiciliare");
     }
     if (newData.totale_positivi === undefined) {
-      errorList.push("Per favore compila totale_positivi");
+      errorList.push("Per favore compilare totale_positivi");
     }
     if (newData.variazione_totale_positivi === undefined) {
-      errorList.push("Per favore compila variazione_totale_positivi");
+      errorList.push("Per favore compilare variazione_totale_positivi");
     }
     if (newData.nuovi_positivi === undefined) {
-      errorList.push("Per favore compila nuovi_positivi");
+      errorList.push("Per favore compilare nuovi_positivi");
     }
     if (newData.dimessi_guariti === undefined) {
-      errorList.push("Per favore compila dimessi_guariti");
+      errorList.push("Per favore compilare dimessi_guariti");
     }
     if (newData.deceduti === undefined) {
-      errorList.push("Per favore compila deceduti");
+      errorList.push("Per favore compilare deceduti");
     }
     if (newData.totale_casi === undefined) {
-      errorList.push("Per favore compila totale_casi");
+      errorList.push("Per favore compilare totale_casi");
     }
     if (newData.tamponi === undefined) {
-      errorList.push("Per favore compila tamponi");
+      errorList.push("Per favore compilare tamponi");
     }
     if (newData.casi_testati === undefined) {
-      errorList.push("Per favore compila casi_testati");
+      errorList.push("Per favore compilare casi_testati");
     }
 
     //se nessun errore...

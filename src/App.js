@@ -34,6 +34,8 @@ import TrendNazionale from "./components/trendNazionale";
 import TrendRegionale from "./components/trendRegionale";
 // helper
 import { isAuthenticated } from "./helper";
+// css
+import "./App.css"
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -214,6 +216,7 @@ function App() {
                 )}
                 <ListItemText
                   primary={localStorage.getItem("login-username")}
+                  className='username-list-item'
                 />
               </ListItem>
               <ListItemLink href="/" onClick={logOut}>

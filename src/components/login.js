@@ -25,9 +25,14 @@ class Login extends Component {
 
   submitLogin(event) {
     event.preventDefault();
+
     login(this.state)
-      .then((token) => (window.location = "/"))
-      .catch((err) => alert(err));
+      .then((token) => {
+        (window.location = "/");
+      })
+      .catch((err) => {
+        alert(err);
+      });
   }
 
   render() {

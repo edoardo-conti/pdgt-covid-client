@@ -1,3 +1,18 @@
+.username-list-item span {
+  font-weight: 800;
+}
+
+.landing-div {
+  width: 50%;
+  text-align: right;
+  margin-left: auto;
+  margin-right: auto;
+}
+.landing-div .textSecondary {
+  font-style: italic;
+  color: rgb(124, 119, 116);
+}
+/*
 .App {
   text-align: center;
 }
@@ -36,3 +51,4 @@
     transform: rotate(360deg);
   }
 }
+*/
