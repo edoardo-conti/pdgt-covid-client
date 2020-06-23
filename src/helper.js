@@ -13,6 +13,17 @@ export function validateDate(input) {
   return input.match(regEx);
 }
 
+// parseJwt parsing di token JWT
+function parseJwt(token) {
+  var base64Url = token.split('.')[1];
+  var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+
+  return JSON.parse(jsonPayload);
+};
+
 // getUsers ricavare tutti gli utenti registrati nel database
 export function getUsers() {
   return axios
@@ -40,8 +51,12 @@ export function login(data) {
       password: data.password,
     })
     .then((response) => {
+      // parsing del token
+      var jwtparsed = parseJwt(response.data.token);
+
       // imposto il token nel localStorage con durata di 15 minuti (verifica fatta anche lato server)
-      localStorage.setItem("usr-login", data.username);
+      localStorage.setItem("login-username", jwtparsed.username);
+      localStorage.setItem("login-admin", jwtparsed.admin);
       localStorage.setItem("x-access-token", response.data.token);
       localStorage.setItem(
         "x-access-token-expiration",

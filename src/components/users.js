@@ -65,6 +65,7 @@ function User() {
     },
     { title: "Nome Utente", field: "username" },
     { title: "Password", field: "password" },
+    { title: "Admin", field: "is_admin", type: 'boolean' },
   ];
 
   // users data
@@ -116,6 +117,7 @@ function User() {
         .post("/utenti/signup", {
           'username': newData.username,
           'password': newData.password,
+          'is_admin': newData.is_admin
         }, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("x-access-token"),

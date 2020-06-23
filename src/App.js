@@ -7,15 +7,25 @@ import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+// icons
+import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import TrendingUpIcon from "@material-ui/icons/TrendingUp";
+import TimelineIcon from "@material-ui/icons/Timeline";
+import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import DashboardIcon from "@material-ui/icons/Dashboard";
+import VpnKeyIcon from "@material-ui/icons/VpnKey";
 // components
 import Home from "./components/home";
 import Login from "./components/login";
@@ -150,16 +160,28 @@ function App() {
           <Divider />
           <List>
             <ListItemLink href="/">
+              <ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
               <ListItemText primary="Homepage" />
             </ListItemLink>
             <ListItemLink href="/trend/nazionale">
+              <ListItemIcon>
+                <TrendingUpIcon />
+              </ListItemIcon>
               <ListItemText primary="Trend Nazionale" />
             </ListItemLink>
             <ListItemLink href="/trend/regionale">
+              <ListItemIcon>
+                <TimelineIcon />
+              </ListItemIcon>
               <ListItemText primary="Trend Regionale" />
             </ListItemLink>
             {isAuthenticated() ? (
               <ListItemLink href="/utenti">
+                <ListItemIcon>
+                  <SupervisedUserCircleIcon />
+                </ListItemIcon>
                 <ListItemText primary="Utenti" />
               </ListItemLink>
             ) : (
@@ -171,6 +193,9 @@ function App() {
           ) : (
             <List>
               <ListItemLink href="/login">
+                <ListItemIcon>
+                  <VpnKeyIcon />
+                </ListItemIcon>
                 <ListItemText primary="Accedi" />
               </ListItemLink>
             </List>
@@ -178,9 +203,23 @@ function App() {
           {isAuthenticated() ? (
             <List>
               <ListItem>
-                <ListItemText primary={localStorage.getItem("usr-login")} />
+                {localStorage.getItem("login-admin") === "true" ? (
+                  <ListItemIcon>
+                    <VerifiedUserIcon />
+                  </ListItemIcon>
+                ) : (
+                  <ListItemIcon>
+                    <AccountCircleIcon />
+                  </ListItemIcon>
+                )}
+                <ListItemText
+                  primary={localStorage.getItem("login-username")}
+                />
               </ListItem>
               <ListItemLink href="/" onClick={logOut}>
+                <ListItemIcon>
+                  <ExitToAppIcon />
+                </ListItemIcon>
                 <ListItemText primary="Esci" />
               </ListItemLink>
             </List>
