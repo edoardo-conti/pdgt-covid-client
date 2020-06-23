@@ -28,6 +28,7 @@ import Divider from "@material-ui/core/Divider";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import LinearProgress from "@material-ui/core/LinearProgress";
 // chart
 import Paper from "@material-ui/core/Paper";
 import {
@@ -144,6 +145,17 @@ const useStyles = makeStyles((theme) => ({
 function TrendNazionale() {
   //table auth
   const [auth, setAuth] = useState([]);
+  //table data
+  const [data, setData] = useState([]);
+  const [datanazloaded, setDadaNazLoaded] = useState(false);
+  //picco
+  const [picco, setPicco] = useState([]);
+  //gestione errori
+  const [iserror, setIserror] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
+  //gestione messaggi
+  const [issuccess, setIssuccess] = useState(false);
+  const [successMessages, setSuccessMessages] = useState([]);
 
   // colonne tabelle popolate da dati API
   var columns = [
@@ -179,17 +191,6 @@ function TrendNazionale() {
     { title: "Casi Testati", field: "casi_testati.Int64", type: "numeric" },
   ];
 
-  //table data
-  const [data, setData] = useState([]);
-  //picco
-  const [picco, setPicco] = useState([]);
-  //gestione errori
-  const [iserror, setIserror] = useState(false);
-  const [errorMessages, setErrorMessages] = useState([]);
-  //gestione messaggi
-  const [issuccess, setIssuccess] = useState(false);
-  const [successMessages, setSuccessMessages] = useState([]);
-
   useEffect(() => {
     // controllo se l'utente è loggato
     if (isAuthenticated()) setAuth(true);
@@ -215,6 +216,9 @@ function TrendNazionale() {
       })
       .then((res) => {
         setPicco(res.data.data);
+
+        // termino progress
+        setDadaNazLoaded(true);
       })
       .catch((error) => {
         console.log("Error");
@@ -487,6 +491,7 @@ function TrendNazionale() {
 
   return (
     <div className="TrendNazionale container">
+      {!datanazloaded ? <LinearProgress /> : ""}
       <div>
         {iserror && (
           <Alert severity="error">

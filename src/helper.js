@@ -35,7 +35,7 @@ export function getUsers() {
 export function login(data) {
   // POST /utenti/login {username, password}
   return axios
-    .post(`${BASE_URL}/utenti/login`, {
+    .post(`${BASE_URL}/utenti/signin`, {
       username: data.username,
       password: data.password,
     })
