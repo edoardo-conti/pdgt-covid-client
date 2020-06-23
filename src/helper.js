@@ -1,9 +1,9 @@
 import axios from "axios";
 
 // pdgt-covid API URL
-const BASE_URL = "https://pdgt-covid.herokuapp.com";
+const BASE_URL = "https://pdgt-covid.herokuapp.com/api";
 export const api = axios.create({
-  baseURL: `https://pdgt-covid.herokuapp.com`,
+  baseURL: `https://pdgt-covid.herokuapp.com/api`,
 });
 
 // validateDate controllo validità data (es. 2020-02-24)

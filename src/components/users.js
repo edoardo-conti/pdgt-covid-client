@@ -116,6 +116,11 @@ function User() {
         .post("/utenti/signup", {
           'username': newData.username,
           'password': newData.password,
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("x-access-token"),
+          },
+          responseType: "json",
         })
         .then((res) => {
           let dataToAdd = [...data];
@@ -170,11 +175,10 @@ function User() {
   };
 
   return (
-    <div className="Users">
+    <div className="Users container">
       {auth ? "" : <Redirect to="/" />}
       <Grid container spacing={1}>
-        <Grid item xs={3}></Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <div>
             {iserror && (
               <Alert severity="error">
@@ -208,7 +212,6 @@ function User() {
             }}
           />
         </Grid>
-        <Grid item xs={3}></Grid>
       </Grid>
     </div>
   );

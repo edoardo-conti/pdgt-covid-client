@@ -197,9 +197,9 @@ function TrendNazionale() {
       setAuth(false);
     }
 
-    // GET /andamento/nazionale
+    // GET /trend/nazionale
     api
-      .get("/andamento/nazionale", {
+      .get("/trend/nazionale", {
         responseType: "json",
       })
       .then((res) => {
@@ -208,9 +208,9 @@ function TrendNazionale() {
       .catch((error) => {
         console.log("Error");
       });
-    // GET /andamento/nazionale/picco
+    // GET /trend/nazionale/picco
     api
-      .get("/andamento/nazionale/picco", {
+      .get("/trend/nazionale/picco", {
         responseType: "json",
       })
       .then((res) => {
@@ -275,9 +275,9 @@ function TrendNazionale() {
     }
 
     if (errorList.length < 1) {
-      // PATCH /andamento/nazionale/data/:bydate
+      // PATCH /trend/nazionale/data/:bydate
       api
-        .patch("/andamento/nazionale/data/" + newData.data, {
+        .patch("/trend/nazionale/data/" + newData.data, {
           ricoverati_con_sintomi: parseInt(newData.ricoverati_con_sintomi),
           terapia_intensiva: parseInt(newData.terapia_intensiva),
           totale_ospedalizzati: parseInt(newData.totale_ospedalizzati),
@@ -292,6 +292,11 @@ function TrendNazionale() {
           totale_casi: parseInt(newData.totale_casi),
           tamponi: parseInt(newData.tamponi),
           casi_testati: parseInt(newData.casi_testati.Int64),
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("x-access-token"),
+          },
+          responseType: "json",
         })
         .then((res) => {
           const dataUpdate = [...data];
@@ -367,8 +372,8 @@ function TrendNazionale() {
     //se nessun errore...
     if (errorList.length < 1) {
       api
-        // POST /andamento/nazionale {newData}
-        .post("/andamento/nazionale", {
+        // POST /trend/nazionale {newData}
+        .post("/trend/nazionale", {
           data: newData.data,
           ricoverati_con_sintomi: newData.ricoverati_con_sintomi,
           terapia_intensiva: newData.terapia_intensiva,
@@ -382,12 +387,19 @@ function TrendNazionale() {
           totale_casi: newData.totale_casi,
           tamponi: newData.tamponi,
           casi_testati: newData.casi_testati.Int64,
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("x-access-token"),
+          },
+          responseType: "json",
         })
         .then((res) => {
+          // todo: app crash
           let dataToAdd = [...data];
           dataToAdd.push(newData);
           setData(dataToAdd);
           resolve();
+
           setErrorMessages([]);
           setIserror(false);
           // success
@@ -408,9 +420,16 @@ function TrendNazionale() {
   };
 
   const handleRowDelete = (oldData, resolve) => {
-    // DELETE /andamento/nazionale/data/:bydate
+    let errorList = [];
+
+    // DELETE /trend/nazionale/data/:bydate
     api
-      .delete("/andamento/nazionale/data/" + oldData.data)
+      .delete("/trend/nazionale/data/" + oldData.data, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("x-access-token"),
+        },
+        responseType: "json",
+      })
       .then((res) => {
         const dataDelete = [...data];
         const index = oldData.tableData.id;
@@ -422,7 +441,8 @@ function TrendNazionale() {
         setIssuccess(true);
       })
       .catch((error) => {
-        setErrorMessages(error.response.data.message);
+        errorList.push(error.response.data.message);
+        setErrorMessages(errorList);
         setIserror(true);
         resolve();
       });
@@ -441,10 +461,12 @@ function TrendNazionale() {
   const [errorDateMessages, setErrorDateMessages] = useState([]);
 
   function searchTrendByDate() {
-    // GET /andamento/nazionale/data/:bydate
+    setIsErrorDate(false);
+
+    // GET /trend/nazionale/data/:bydate
     api
       .get(
-        "/andamento/nazionale/data/" +
+        "/trend/nazionale/data/" +
           moment(selectedDatePick).format("YYYY-MM-DD"),
         {
           responseType: "json",

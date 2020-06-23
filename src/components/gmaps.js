@@ -6,16 +6,6 @@ import {
   Circle,
 } from "react-google-maps";
 
-/*
-<Marker
-position={{
-    lat: parseFloat(place.latitude),
-    lng: parseFloat(place.longitude).
-    text="My Marker"
-}}
-/>
-*/
-
 const Map = (props) => {
   return (
     <GoogleMap defaultZoom={props.zoom} defaultCenter={props.center}>

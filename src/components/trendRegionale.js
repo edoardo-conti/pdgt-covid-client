@@ -196,9 +196,7 @@ function TrendRegionale() {
 
     return (
       <Box margin={1}>
-        <Typography variant="h6" gutterBottom component="div">
-          History
-        </Typography>
+        <Typography variant="h6" gutterBottom component="div">Storico</Typography>
         <Table size="small" aria-label="purchases">
           <TableHead>
             <TableRow>
@@ -207,7 +205,6 @@ function TrendRegionale() {
               <TableCell>Terapia Intensiva</TableCell>
               <TableCell>Totale Ospedalizzati</TableCell>
               <TableCell>isolamento Domiciliare</TableCell>
-              <TableCell>Totale Positivi</TableCell>
               <TableCell>Variazione Totale Positivi</TableCell>
               <TableCell>Nuovi Positivi</TableCell>
               <TableCell>Dimessi Guariti</TableCell>
@@ -232,7 +229,6 @@ function TrendRegionale() {
                 <TableCell>
                   {datatableRow.info[0].isolamento_domiciliare}
                 </TableCell>
-                <TableCell>{datatableRow.info[0].totale_positivi}</TableCell>
                 <TableCell>
                   {datatableRow.info[0].variazione_totale_positivi}
                 </TableCell>
@@ -250,9 +246,9 @@ function TrendRegionale() {
   }
 
   useEffect(() => {
-    // GET /andamento/regionale
+    // GET /trend/regionale
     api
-      .get("/andamento/regionale", {
+      .get("/trend/regionale", {
         responseType: "json",
       })
       .then((res) => {
@@ -267,9 +263,9 @@ function TrendRegionale() {
 
     // funzionalità attiva solamente se user autenticato
     if (isAuthenticated()) {
-      // GET /andamento/regionale/regione/:byregid
+      // GET /trend/regionale/regione/:byregid
       api
-        .get("/andamento/regionale/regione/1")
+        .get("/trend/regionale/regione/1")
         .then((res) => {
           setReg1(res.data.data);
         })
@@ -277,7 +273,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/2")
+        .get("/trend/regionale/regione/2")
         .then((res) => {
           setReg2(res.data.data);
         })
@@ -285,7 +281,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/3")
+        .get("/trend/regionale/regione/3")
         .then((res) => {
           setReg3(res.data.data);
         })
@@ -293,7 +289,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/5")
+        .get("/trend/regionale/regione/5")
         .then((res) => {
           setReg5(res.data.data);
         })
@@ -301,7 +297,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/6")
+        .get("/trend/regionale/regione/6")
         .then((res) => {
           setReg6(res.data.data);
         })
@@ -309,7 +305,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/7")
+        .get("/trend/regionale/regione/7")
         .then((res) => {
           setReg7(res.data.data);
         })
@@ -317,7 +313,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/8")
+        .get("/trend/regionale/regione/8")
         .then((res) => {
           setReg8(res.data.data);
         })
@@ -325,7 +321,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/9")
+        .get("/trend/regionale/regione/9")
         .then((res) => {
           setReg9(res.data.data);
         })
@@ -333,7 +329,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/10")
+        .get("/trend/regionale/regione/10")
         .then((res) => {
           setReg10(res.data.data);
         })
@@ -341,7 +337,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/11")
+        .get("/trend/regionale/regione/11")
         .then((res) => {
           setReg11(res.data.data);
         })
@@ -349,7 +345,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/12")
+        .get("/trend/regionale/regione/12")
         .then((res) => {
           setReg12(res.data.data);
         })
@@ -357,7 +353,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/13")
+        .get("/trend/regionale/regione/13")
         .then((res) => {
           setReg13(res.data.data);
         })
@@ -365,7 +361,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/14")
+        .get("/trend/regionale/regione/14")
         .then((res) => {
           setReg14(res.data.data);
         })
@@ -373,7 +369,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/15")
+        .get("/trend/regionale/regione/15")
         .then((res) => {
           setReg15(res.data.data);
         })
@@ -381,7 +377,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/16")
+        .get("/trend/regionale/regione/16")
         .then((res) => {
           setReg16(res.data.data);
         })
@@ -389,7 +385,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/17")
+        .get("/trend/regionale/regione/17")
         .then((res) => {
           setReg17(res.data.data);
         })
@@ -397,7 +393,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/18")
+        .get("/trend/regionale/regione/18")
         .then((res) => {
           setReg18(res.data.data);
         })
@@ -405,7 +401,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/19")
+        .get("/trend/regionale/regione/19")
         .then((res) => {
           setReg19(res.data.data);
         })
@@ -413,7 +409,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/20")
+        .get("/trend/regionale/regione/20")
         .then((res) => {
           setReg20(res.data.data);
         })
@@ -421,7 +417,7 @@ function TrendRegionale() {
           console.log("Error");
         });
       api
-        .get("/andamento/regionale/regione/21")
+        .get("/trend/regionale/regione/21")
         .then((res) => {
           setReg21(res.data.data);
         })
@@ -446,10 +442,13 @@ function TrendRegionale() {
   const [errorMessages, setErrorMessages] = useState([]);
 
   function searchTrendByDate() {
-    // GET /andamento/regionale/data/:bydate
+    // todo
+    setIserror(false);
+
+    // GET /trend/regionale/data/:bydate
     api
       .get(
-        "/andamento/regionale/data/" +
+        "/trend/regionale/data/" +
           moment(selectedDatePick).format("YYYY-MM-DD"),
         {
           responseType: "json",
@@ -474,9 +473,12 @@ function TrendRegionale() {
   };
 
   function searchPeakByReg() {
-    // GET /andamento/regionale/picco/:byregid
+    // todo
+    setIserror(false);
+
+    // GET /trend/regionale/picco/:byregid
     api
-      .get("/andamento/regionale/picco/" + regPeakID, {
+      .get("/trend/regionale/picco/" + regPeakID, {
         responseType: "json",
       })
       .then((res) => {
@@ -546,14 +548,14 @@ function TrendRegionale() {
         <Grid item xs={6}>
           <Paper elevation={2}>
             <Card>
-              {iserror && (
-                <Alert severity="error">
-                  {errorMessages.map((msg, i) => {
-                    return <div key={i}>{msg}</div>;
-                  })}
-                </Alert>
-              )}
               <CardContent>
+                {iserror && (
+                  <Alert severity="error">
+                    {errorMessages.map((msg, i) => {
+                      return <div key={i}>{msg}</div>;
+                    })}
+                  </Alert>
+                )}
                 <h2>Ricerca Trend Regionale</h2>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker

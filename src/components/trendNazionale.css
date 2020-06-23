@@ -1,7 +1,3 @@
-.MuiTableCell-root {
-  /* font-size: 1.2rem !important; */
-}
-
 .MuiFormControl-marginNormal {
   margin: 0px !important;
   margin-bottom: 2% !important;
@@ -15,4 +11,8 @@
 .MuiCardContent-root .MuiListItem-root {
   padding-top: 0px !important;
   padding-bottom: 0px !important;
+}
+
+.MuiAlert-standardError, .MuiAlert-standardSuccess {
+  margin-bottom: 2%;
 }
