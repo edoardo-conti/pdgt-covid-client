@@ -3,7 +3,7 @@
 [![Deploy](https://heroku-badge.herokuapp.com/?app=pdgt-covid-client)](https://pdgt-covid-client.herokuapp.com/)
 ![GitHub package.json dependency version (prod)](https://img.shields.io/github/package-json/dependency-version/edoardo-conti/pdgt-covid-client/react)
 
-# Client Progetto Piattaforme Digitali per la Gestione del Territorio 
+# Progetto Piattaforme Digitali per la Gestione del Territorio 
 
 * Secondo appello sessione estiva 2019/2020
 * [Edoardo Conti - 278717](https://github.com/edoardo-conti)
