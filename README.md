@@ -1,4 +1,24 @@
+# 🧪 pdgt-covid-client 👨‍💻 #
 [![Build Status](https://travis-ci.org/edoardo-conti/pdgt-covid-client.svg?branch=master)](https://travis-ci.org/edoardo-conti/pdgt-covid-client)
+[![Deploy](https://heroku-badge.herokuapp.com/?app=pdgt-covid-client)](https://pdgt-covid-client.herokuapp.com/)
+![GitHub package.json dependency version (prod)](https://img.shields.io/github/package-json/dependency-version/edoardo-conti/pdgt-covid-client/react)
+
+# Client Progetto Piattaforme Digitali per la Gestione del Territorio 
+
+* Secondo appello sessione estiva 2019/2020
+* [Edoardo Conti - 278717](https://github.com/edoardo-conti)
+
+------------------------------------------
+
+### Informazioni ###
+
+Questo repository contiene il client dimostrativo del progetto **pdgt-covid**. Per accedere alla web app recarsi al seguente indirizzo: https://pdgt-covid-client.herokuapp.com
+
+Per la relazione completa fare riferimento al repository principale: https://github.com/edoardo-conti/pdgt-covid#-pdgt-covid-
+
+------------------------------------------
+
+### Sezione Generata Automaticamente ###
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -68,3 +88,8 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+------------------------------------------
+
+### Licenza ###
+Questo progetto è rilasciato sotto i termini della [licenza MIT](https://github.com/edoardo-conti/pdgt-covid/blob/master/LICENSE).
