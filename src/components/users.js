@@ -64,7 +64,7 @@ function User() {
       ),
     },
     { title: "Nome Utente", field: "username" },
-    { title: "Password", field: "password" },
+    { title: "Password", field: "password", hidden: true,},
     { title: "Admin", field: "is_admin", type: 'boolean' },
   ];
 
@@ -95,58 +95,6 @@ function User() {
     }
   }, []);
 
-  const handleRowAdd = (newData, resolve) => {
-    let errorList = [];
-
-    // validazione dei campi
-    if (newData.username === undefined) {
-      errorList.push("Per favore compila username");
-    }
-    if (newData.password === undefined) {
-      errorList.push("Per favore compila password");
-    }
-
-    // trim dei campi
-    newData.username = newData.username.trim();
-    newData.password = newData.password.trim();
-
-    // no error
-    if (errorList.length < 1) {
-      // POST /utenti/signup {newData}
-      api
-        .post("/utenti/signup", {
-          'username': newData.username,
-          'password': newData.password,
-          'is_admin': newData.is_admin
-        }, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("x-access-token"),
-          },
-          responseType: "json",
-        })
-        .then((res) => {
-          let dataToAdd = [...data];
-          dataToAdd.push(newData);
-          setData(dataToAdd);
-          resolve();
-          setErrorMessages([]);
-          setIserror(false);
-          setSuccessMessages([res.data.message]);
-          setIssuccess(true);
-        })
-        .catch((error) => {
-          errorList.push(error.response.data.message);
-          setErrorMessages(errorList);
-          setIserror(true);
-          resolve();
-        });
-    } else {
-      setErrorMessages(errorList);
-      setIserror(true);
-      resolve();
-    }
-  };
-
   const handleRowDelete = (oldData, resolve) => {
     // errori
     let errorList = [];
@@ -171,15 +119,15 @@ function User() {
           const index = oldData.tableData.id;
           dataDelete.splice(index, 1);
           setData([...dataDelete]);
-          resolve();
           setSuccessMessages([res.data.message]);
           setIssuccess(true);
+          resolve();
         })
         .catch((error) => {
           errorList.push(error.response.data.message);
           setErrorMessages(errorList);
           setIserror(true);
-          
+          resolve();
         });
     }
   };
@@ -211,10 +159,6 @@ function User() {
             data={data}
             icons={tableIcons}
             editable={{
-              onRowAdd: (newData) =>
-                new Promise((resolve) => {
-                  handleRowAdd(newData, resolve);
-                }),
               onRowDelete: (oldData) =>
                 new Promise((resolve) => {
                   handleRowDelete(oldData, resolve);

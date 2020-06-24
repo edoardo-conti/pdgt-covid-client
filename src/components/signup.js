@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { login } from "../helper";
+import { signup } from "../helper";
 // GUI
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -8,27 +8,33 @@ import TextField from "@material-ui/core/TextField";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 // css
-import "./login.css";
+import "./login-signup.css";
 
-class Login extends Component {
+class Signup extends Component {
   constructor() {
     super();
-    this.state = { username: "", password: "" };
+    this.state = { username: "", password: "", is_admin: false };
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.submitLogin = this.submitLogin.bind(this);
-  }  
+    this.submitSignup = this.submitSignup.bind(this);
+  }
 
   handleInputChange(event) {
     this.setState({ [event.target.name]: event.target.value });
+    console.log(this.state);
   }
 
-  submitLogin(event) {
+  submitSignup(event) {
     event.preventDefault();
 
-    login(this.state)
-      .then((token) => {
-        (window.location = "/");
+    signup(this.state)
+      .then((res) => {
+        var messagge = res.message;
+
+        alert(messagge + " Ora è possibile eseguire l'accesso!");
+        window.location = "/signin";
       })
       .catch((err) => {
         alert(err);
@@ -39,14 +45,14 @@ class Login extends Component {
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <div className="login-div">
+        <div className="signup-div">
           <Avatar>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Accedi a <b>pdgt-covid</b>
+            Registrati su <b>pdgt-covid</b>
           </Typography>
-          <form onSubmit={this.submitLogin}>
+          <form onSubmit={this.submitSignup}>
             <TextField
               variant="outlined"
               margin="normal"
@@ -71,13 +77,18 @@ class Login extends Component {
               autoComplete="current-password"
               onChange={this.handleInputChange}
             />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-            >
-              Accedi
+            <FormControlLabel
+              control={
+                <Checkbox
+                  onChange={this.handleInputChange}
+                  name="is_admin"
+                  //inputProps={{ 'aria-label': 'primary checkbox' }}
+                />
+              }
+              label="Cliccare per registrare utente come admin"
+            />
+            <Button type="submit" fullWidth variant="contained" color="primary">
+              Registrati
             </Button>
           </form>
         </div>
@@ -85,4 +96,4 @@ class Login extends Component {
     );
   }
 }
-export default Login;
+export default Signup;

@@ -17,6 +17,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 // icons
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
@@ -28,7 +29,8 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 // components
 import Home from "./components/home";
-import Login from "./components/login";
+import Signin from "./components/signin";
+import Signup from "./components/signup";
 import Users from "./components/users";
 import TrendNazionale from "./components/trendNazionale";
 import TrendRegionale from "./components/trendRegionale";
@@ -190,15 +192,22 @@ function App() {
               ""
             )}
           </List>
+          <Divider />
           {isAuthenticated() ? (
-            <Divider />
+            ""
           ) : (
             <List>
-              <ListItemLink href="/login">
+              <ListItemLink href="/signin">
                 <ListItemIcon>
                   <VpnKeyIcon />
                 </ListItemIcon>
                 <ListItemText primary="Accedi" />
+              </ListItemLink>
+              <ListItemLink href="/signup">
+                <ListItemIcon>
+                  <PersonAddIcon />
+                </ListItemIcon>
+                <ListItemText primary="Registrati" />
               </ListItemLink>
             </List>
           )}
@@ -242,7 +251,8 @@ function App() {
       <Route exact path="/trend/nazionale" component={TrendNazionale} />
       <Route exact path="/trend/regionale" component={TrendRegionale} />
       <Route exact path="/utenti" component={Users} />
-      <Route exact path="/login" component={Login} />
+      <Route exact path="/signin" component={Signin} />
+      <Route exact path="/signup" component={Signup} />
     </Router>
   );
 }

@@ -1,11 +1,11 @@
-.login-div {
+.login-div, .signup-div {
   display: flex;
   margin-top: 64px;
   align-items: center;
   flex-direction: column;
 }
 
-.login-div .MuiFormControl-marginNormal {
+.login-div .MuiFormControl-marginNormal, .signup-div .MuiFormControl-marginNormal {
   margin-top: 16px !important;
   margin-bottom: 8px !important;
 }

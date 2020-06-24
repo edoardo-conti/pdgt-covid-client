@@ -3,15 +3,36 @@
 }
 
 .landing-div {
-  width: 50%;
-  text-align: right;
+  width: 80%;
   margin-left: auto;
   margin-right: auto;
 }
-.landing-div .textSecondary {
-  font-style: italic;
-  color: rgb(124, 119, 116);
+.landing-div h1 {
+  text-align:  center;
+  margin-bottom: 50px;
 }
+
+.landing-div span {
+  margin: 0 10px;
+}
+.landing-div span[aria-label="provetta"] {
+  margin-left: 0;
+}
+
+.landing-div a {
+  margin: 0 2px;
+}
+.landing-div .first-a {
+  margin-left: 0;
+}
+
+.github-link {
+  margin: 20px 0 !important;
+  font-size: 20px !important;
+  display: inline-block;
+}
+
+
 /*
 .App {
   text-align: center;

@@ -43,8 +43,8 @@ export function getUsers() {
 }
 
 // login eseguire l'accesso ad un utente tramite username e password per ricevere token jwt
-export function login(data) {
-  // POST /utenti/login {username, password}
+export function signin(data) {
+  // POST /utenti/signin {username, password}
   return axios
     .post(`${BASE_URL}/utenti/signin`, {
       username: data.username,
@@ -66,6 +66,22 @@ export function login(data) {
     })
     .catch((err) => Promise.reject(err.response.data.message));
   //.catch((err) => Promise.reject("Credenziali errate, per favore riprovare."));
+}
+
+// signup registrare un utente tramite username, password e livello autorizzazione
+export function signup(data) {
+  // POST /utenti/signup {username, password}
+  return axios
+    .post(`${BASE_URL}/utenti/signup`, {
+      username: data.username,
+      password: data.password,
+      is_admin: (data.is_admin === false) ? false : true 
+    })
+    .then((response) => {
+      // todo
+      return response.data;
+    })
+    .catch((err) => Promise.reject(err.response.data.message));
 }
 
 // isAuthenticated verifica se l'utente è loggato correttamente
