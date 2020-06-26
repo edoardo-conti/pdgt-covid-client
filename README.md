@@ -92,4 +92,4 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 ------------------------------------------
 
 ### Licenza ###
-Questo progetto è rilasciato sotto i termini della [licenza MIT](https://github.com/edoardo-conti/pdgt-covid/blob/master/LICENSE).
+Questo progetto è rilasciato sotto i termini della [licenza MIT](https://github.com/edoardo-conti/pdgt-covid-client/blob/master/LICENSE).
